@@ -17,17 +17,17 @@ int main(){
 
     char mapa[LINHAS][COLUNAS+1]={
     "#####################",
-    "#                   #",
-    "#                   #",  
-    "#                   #",
-    "#                   #",
-    "#                   #",
-    "#                   #",
-    "#                   #",
-    "#                   #",
-    "#                   #",
-    "#                   #",
-    "#                   #",
+    "#       *           #",
+    "#  *    *     *     #",  
+    "#    *         *    #",
+    "#            *   *  #",
+    "#   * *   *         #",
+    "#               *   #",
+    "#  *    *    *   *  #",
+    "#    *              #",
+    "#      *      *     #",
+    "#        *       *  #",
+    "#    *       *      #",
     "#####################"
     };
 
@@ -45,16 +45,16 @@ int main(){
 
     while(!WindowShouldClose()){
 
-        if(IsKeyPressed(KEY_W) && mapa[andarY-1][andarX] != '#'){
+        if(IsKeyPressed(KEY_W) && mapa[andarY-1][andarX] != '#' && mapa[andarY-1][andarX] != '*'){
             andarY--;
         }
-        if(IsKeyPressed(KEY_S) && mapa[andarY+1][andarX] != '#'){
+        if(IsKeyPressed(KEY_S) && mapa[andarY+1][andarX] != '#' && mapa[andarY+1][andarX] != '*'){
             andarY++;
         }
-        if (IsKeyPressed(KEY_A) && mapa[andarY][andarX-1] != '#'){
+        if (IsKeyPressed(KEY_A) && mapa[andarY][andarX-1] != '#' && mapa[andarY][andarX-1] != '*'){
             andarX--;
         }
-        if (IsKeyPressed(KEY_D) && mapa[andarY][andarX+1] != '#'){
+        if (IsKeyPressed(KEY_D) && mapa[andarY][andarX+1] != '#' && mapa[andarY][andarX+1] != '*'){
             andarX++;   
         }
 
@@ -75,9 +75,18 @@ int main(){
                 bomba1.explosao = 1;
 
                 bomba1.tempoExplosao = 0.5f;
+
+                if(mapa[bomba1.y-1][bomba1.x] == '*'){
+                    mapa[bomba1.y-1][bomba1.x]=' ';
+                } if (mapa[bomba1.y+1][bomba1.x] == '*'){
+                    mapa[bomba1.y+1][bomba1.x] = ' ';
+                } if(mapa[bomba1.y][bomba1.x-1] == '*'){
+                    mapa[bomba1.y][bomba1.x-1] = ' ';
+                } if(mapa[bomba1.y][bomba1.x+1] == '*'){
+                    mapa[bomba1.y][bomba1.x+1] = ' ';
+                }
             }
         }
-
 
         if (bomba1.explosao == 1){
             bomba1.tempoExplosao -= GetFrameTime();
@@ -100,6 +109,16 @@ int main(){
                         pixel,
                         pixel,
                         GRAY
+                    );
+                }
+
+                if (mapa[y][x] == '*') {
+                    DrawRectangle(
+                        x * pixel,
+                        y * pixel,
+                        pixel,
+                        pixel,
+                        BROWN
                     );
                 }
 
