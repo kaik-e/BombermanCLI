@@ -1,69 +1,85 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "raylib.h"
 
-void renderizarMAPA(char mapa[5][12], int andarX, int andarY){
-    for(int y=0;y<5;y++){
-            for(int x=0;x<11;x++){
-                if(x == andarX && y == andarY){
-                    printf("P");
-                } 
-                else{
-                    printf("%c", mapa[y][x]);
-                }
-            }
-            printf("\n");
-        }
-    }
+#define pixel 64
+#define LINHAS 13
+#define COLUNAS 21
 
-void moverjogador(char mapa[5][12], int *andarX, int *andarY){
-    char comando;
-    
-    printf("wasd:");
-    scanf(" %c", &comando);
+int main(){
 
-    if(comando == 'w'){
-        if(mapa[*andarY-1][*andarX] != '#'){
-            (*andarY)--;
-        }
-    }
-    else if(comando == 's'){
-        if(mapa[*andarY+1][*andarX] != '#'){
-            (*andarY)++;
-        }
-    }
-    else if(comando == 'a'){
-        if(mapa[*andarY][*andarX-1] != '#'){
-            (*andarX)--;
-        }
-    }
-    else if(comando == 'd'){
-        if(mapa[*andarY][*andarX+1] != '#'){
-            (*andarX)++;
-        }
-    } else{
-        printf("comando inválido!");
-    }
-}
-
-int main() {
-
-    char comando;
-    char mapa[5][12] = {
-        "###########",
-        "#         #",
-        "#         #",
-        "#         #",
-        "###########"
+    char mapa[LINHAS][COLUNAS + 1]={
+    "#####################",
+    "#                   #",
+    "#                   #",  
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#                   #",
+    "#####################"
     };
 
-    int andarX = 5;
-    int andarY = 2;
+    int andarX = 10;
+    int andarY = 6;
 
-    while(1) {
-        system("clear");
+    InitWindow(COLUNAS*pixel, LINHAS*pixel, "BomberMan");
 
-        renderizarMAPA(mapa,andarX,andarY);
-        moverjogador(mapa,&andarX,&andarY);
+    SetTargetFPS(60);
+
+    while(!WindowShouldClose()){
+
+        if(IsKeyPressed(KEY_W) && mapa[andarY-1][andarX] != '#'){
+            andarY--;
+        }
+        if(IsKeyPressed(KEY_S) && mapa[andarY+1][andarX] != '#'){
+            andarY++;
+        }
+        if (IsKeyPressed(KEY_A) && mapa[andarY][andarX-1] != '#'){
+            andarX--;
+        }
+        if (IsKeyPressed(KEY_D) && mapa[andarY][andarX+1] != '#'){
+            andarX++;   
+        }
+
+        // RENDER
+        BeginDrawing();
+        ClearBackground(BLACK);
+
+        for (int y = 0; y < LINHAS; y++) {
+            for (int x = 0; x < COLUNAS; x++) {
+
+                // parede
+                if (mapa[y][x] == '#') {
+                    DrawRectangle(
+                        x * pixel,
+                        y * pixel,
+                        pixel,
+                        pixel,
+                        GRAY
+                    );
+                }
+
+                // jogador
+                if (x == andarX && y == andarY) {
+
+                    DrawRectangle(
+                        x * pixel,
+                        y * pixel,
+                        pixel,
+                        pixel,
+                        RED
+                    );
+                }
+            }
+        }
+
+        EndDrawing();
     }
+
+    CloseWindow();
+
     return 0;
 }
