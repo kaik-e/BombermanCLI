@@ -4,9 +4,18 @@
 #define LINHAS 13
 #define COLUNAS 21
 
+typedef struct bomba{
+    int x;
+    int y;
+    int ativa;
+    float timer;
+    int explosao;
+    float tempoExplosao;
+}bomba;
+
 int main(){
 
-    char mapa[LINHAS][COLUNAS + 1]={
+    char mapa[LINHAS][COLUNAS+1]={
     "#####################",
     "#                   #",
     "#                   #",  
@@ -24,6 +33,11 @@ int main(){
 
     int andarX = 10;
     int andarY = 6;
+
+    bomba bomba1;
+
+    bomba1.ativa=0;
+    bomba1.explosao = 0;
 
     InitWindow(COLUNAS*pixel, LINHAS*pixel, "BomberMan");
 
@@ -44,14 +58,41 @@ int main(){
             andarX++;   
         }
 
-        // RENDER
+        if (IsKeyPressed(KEY_SPACE)) {
+
+            bomba1.x = andarX;
+            bomba1.y = andarY;
+            bomba1.ativa = 1;
+            bomba1.timer= 4.0f;
+        }
+
+         if (bomba1.ativa == 1){
+            bomba1.timer -= GetFrameTime();
+            
+            if (bomba1.timer <= 0){
+                bomba1.ativa = 0;
+
+                bomba1.explosao = 1;
+
+                bomba1.tempoExplosao = 0.5f;
+            }
+        }
+
+
+        if (bomba1.explosao == 1){
+            bomba1.tempoExplosao -= GetFrameTime();
+            
+            if (bomba1.tempoExplosao <= 0){
+                bomba1.explosao=0;
+            }
+        }
+
         BeginDrawing();
         ClearBackground(BLACK);
 
         for (int y = 0; y < LINHAS; y++) {
             for (int x = 0; x < COLUNAS; x++) {
 
-                // parede
                 if (mapa[y][x] == '#') {
                     DrawRectangle(
                         x * pixel,
@@ -62,7 +103,6 @@ int main(){
                     );
                 }
 
-                // jogador
                 if (x == andarX && y == andarY) {
 
                     DrawRectangle(
@@ -74,6 +114,62 @@ int main(){
                     );
                 }
             }
+        }
+
+        if (bomba1.ativa==1){
+
+            DrawRectangle(
+                bomba1.x * pixel,
+                bomba1.y * pixel,
+                pixel,
+                pixel,
+                BLUE
+            );
+        }
+
+        if (bomba1.explosao==1){
+            DrawRectangle(
+                bomba1.x *pixel,
+                bomba1.y*pixel,
+                pixel,
+                pixel,
+                YELLOW
+            );
+
+
+            DrawRectangle(
+                bomba1.x*pixel,
+                (bomba1.y-1)*pixel,
+                pixel,
+                pixel,
+                ORANGE
+            );
+
+            DrawRectangle(
+                bomba1.x* pixel,
+                (bomba1.y+1) * pixel,
+                pixel,
+                pixel,
+                ORANGE
+            );
+
+
+            DrawRectangle(
+                (bomba1.x-1)*pixel,
+                bomba1.y*pixel,
+                pixel,
+                pixel,
+                ORANGE
+            );
+
+
+            DrawRectangle(
+                (bomba1.x+1)*pixel,
+                bomba1.y*pixel,
+                pixel,
+                pixel,
+                ORANGE
+            );
         }
 
         EndDrawing();
