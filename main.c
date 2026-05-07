@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdlib.h>
 
 #define pixel 64
 #define LINHAS 13
@@ -13,21 +14,28 @@ typedef struct bomba{
     float tempoExplosao;
 }bomba;
 
+typedef struct inimigo{
+    int x;
+    int y;
+    int vivo;
+    float tempoInimigo;
+}inimigo;
+
 int main(){
 
     char mapa[LINHAS][COLUNAS+1]={
     "#####################",
-    "#       *           #",
-    "#  *    *     *     #",  
-    "#    *         *    #",
-    "#            *   *  #",
+    "#   *   *     ***   #",
+    "#  *    *  *  *     #",  
+    "#    *    *    *    #",
+    "#     **     *   *  #",
     "#   * *   *         #",
-    "#               *   #",
+    "#    *  * *     *   #",
     "#  *    *    *   *  #",
-    "#    *              #",
-    "#      *      *     #",
-    "#        *       *  #",
-    "#    *       *      #",
+    "# *  *    *  *  *   #",
+    "#*     *      *     #",
+    "#  *     *       *  #",
+    "#    *  *    *      #",
     "#####################"
     };
 
@@ -37,6 +45,12 @@ int main(){
     int andarY = 6;
 
     bomba bomba1;
+
+    inimigo inimigo1;
+    inimigo1.x = 15;
+    inimigo1.y = 8;
+    inimigo1.vivo = 1;
+    inimigo1.tempoInimigo = 0;
 
     bomba1.ativa=0;
     bomba1.explosao = 0;
@@ -99,6 +113,22 @@ int main(){
                 } if(bomba1.x+1 == andarX && bomba1.y == andarY){
                     vivo = 0;
                 }
+
+                if (bomba1.x == inimigo1.x && bomba1.y == inimigo1.y){
+                    inimigo1.vivo = 0;
+                }
+                if (bomba1.x == inimigo1.x && bomba1.y-1 == inimigo1.y){
+                    inimigo1.vivo = 0;
+                }
+                if(bomba1.x == inimigo1.x && bomba1.y+1 == inimigo1.y){
+                    inimigo1.vivo = 0;
+                }
+                if(bomba1.x-1 == inimigo1.x && bomba1.y == inimigo1.y){
+                    inimigo1.vivo = 0;
+                }
+                if(bomba1.x+1 == inimigo1.x && bomba1.y == inimigo1.y){
+                    inimigo1.vivo = 0;
+                }
             }
         }
 
@@ -108,6 +138,33 @@ int main(){
             if (bomba1.tempoExplosao <= 0){
                 bomba1.explosao=0;
             }
+        }
+
+        inimigo1.tempoInimigo += GetFrameTime();
+
+        if(inimigo1.tempoInimigo >= 0.5f){
+            int direcao = rand() % 4;
+
+            if(direcao == 0 && mapa[inimigo1.y-1][inimigo1.x] != '#' && mapa[inimigo1.y-1][inimigo1.x] != '*'){
+                inimigo1.y--;
+            }
+
+            if(direcao == 1 && mapa[inimigo1.y+1][inimigo1.x] != '#' && mapa[inimigo1.y+1][inimigo1.x] != '*'){
+                inimigo1.y++;
+            }
+
+            if(direcao == 2 && mapa[inimigo1.y][inimigo1.x-1] != '#' && mapa[inimigo1.y][inimigo1.x-1] != '*'){
+                inimigo1.x--;
+            }
+
+            if(direcao == 3 && mapa[inimigo1.y][inimigo1.x+1] != '#' && mapa[inimigo1.y][inimigo1.x+1] != '*'){
+                inimigo1.x++;
+            }
+            inimigo1.tempoInimigo = 0;
+        }
+
+        if(inimigo1.x == andarX && inimigo1.y == andarY){
+            vivo = 0;
         }
 
         BeginDrawing();
@@ -205,6 +262,16 @@ int main(){
             );
         }
 
+        if(inimigo1.vivo == 1){
+
+        DrawRectangle(
+            inimigo1.x * pixel,
+            inimigo1.y * pixel,
+            pixel,
+            pixel,
+            GREEN
+        );
+    }
         EndDrawing();
     }
 
