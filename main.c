@@ -60,7 +60,7 @@ int main(){
             andarX++;   
         }
 
-        if (IsKeyPressed(KEY_SPACE) && mapa[bomba1.y][bomba1.x] == '*') {
+        if (IsKeyPressed(KEY_SPACE) && mapa[bomba1.y][bomba1.x] != '*') {
 
             bomba1.x = andarX;
             bomba1.y = andarY;
