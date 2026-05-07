@@ -31,6 +31,8 @@ int main(){
     "#####################"
     };
 
+    int vivo =1;
+
     int andarX = 10;
     int andarY = 6;
 
@@ -43,7 +45,7 @@ int main(){
 
     SetTargetFPS(60);
 
-    while(!WindowShouldClose()){
+    while(!WindowShouldClose() && vivo==1){
 
         if(IsKeyPressed(KEY_W) && mapa[andarY-1][andarX] != '#' && mapa[andarY-1][andarX] != '*'){
             andarY--;
@@ -58,7 +60,7 @@ int main(){
             andarX++;   
         }
 
-        if (IsKeyPressed(KEY_SPACE)) {
+        if (IsKeyPressed(KEY_SPACE) && mapa[bomba1.y][bomba1.x] == '*') {
 
             bomba1.x = andarX;
             bomba1.y = andarY;
@@ -84,6 +86,18 @@ int main(){
                     mapa[bomba1.y][bomba1.x-1] = ' ';
                 } if(mapa[bomba1.y][bomba1.x+1] == '*'){
                     mapa[bomba1.y][bomba1.x+1] = ' ';
+                }
+
+                if(bomba1.x ==  andarX && bomba1.y == andarY){
+                    vivo = 0;
+                } if(bomba1.x ==andarX && bomba1.y-1 == andarY){
+                    vivo = 0;
+                }if(bomba1.x ==andarX && bomba1.y+1 == andarY){
+                    vivo = 0;
+                } if(bomba1.x-1 == andarX && bomba1.y == andarY){
+                    vivo = 0;
+                } if(bomba1.x+1 == andarX && bomba1.y == andarY){
+                    vivo = 0;
                 }
             }
         }
