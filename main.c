@@ -49,24 +49,47 @@ void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int andarX, in
 
     inimigo1->tempoInimigo += GetFrameTime();
 
-    if(inimigo1->tempoInimigo >= 0.5f){
+    if(inimigo1->tempoInimigo >= 0.7f){
+        int mexeu = 0;
 
-        int direcao = rand()%4;
-
-        if(direcao == 0 && mapa[inimigo1->y - 1][inimigo1->x] != '#' && mapa[inimigo1->y - 1][inimigo1->x] != '*'){
-            inimigo1->y--;
-        }
-
-        if(direcao == 1 && mapa[inimigo1->y+1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
-            inimigo1->y++;
-        }
-
-        if(direcao == 2 && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
-            inimigo1->x--;
-        }
-
-        if(direcao == 3 && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x+1] != '*'){
+        if(andarX>inimigo1->x && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x + 1] != '*'){
             inimigo1->x++;
+            mexeu=1;
+        }
+
+        else if(andarX < inimigo1->x && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
+            inimigo1->x--;
+            mexeu=1;
+        }
+
+        else if(andarY > inimigo1->y && mapa[inimigo1->y+ 1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
+            inimigo1->y++;
+            mexeu=1;
+        }
+
+        else if(andarY < inimigo1->y && mapa[inimigo1->y-1][inimigo1->x] != '#' && mapa[inimigo1->y -1][inimigo1->x] != '*'){
+            inimigo1->y--;
+            mexeu=1;
+        }
+
+        if(mexeu==0){
+            int direcao = rand() %4;
+
+            if(direcao == 0 && mapa[inimigo1->y-1][inimigo1->x] != '#' && mapa[inimigo1->y-1][inimigo1->x] != '*'){
+                inimigo1->y--;
+            }
+
+            if(direcao == 1 && mapa[inimigo1->y+1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
+                inimigo1->y++;
+            }
+
+            if(direcao == 2 && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
+                inimigo1->x--;
+            }
+
+            if(direcao == 3 && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x+1] != '*'){
+                inimigo1->x++;
+            }
         }
 
         if(inimigo1->x == andarX && inimigo1->y == andarY){
@@ -77,7 +100,7 @@ void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int andarX, in
     }
 }
 
-void colocarbomba(bomba* bomba1, int andarX, int andarY){
+void colocarbomba(bomba* bomba1, int andarX,int andarY){
     if(IsKeyPressed(KEY_SPACE) && bomba1->ativa == 0){
 
         bomba1->x = andarX;
@@ -89,8 +112,7 @@ void colocarbomba(bomba* bomba1, int andarX, int andarY){
     }
 }
 
-void atualizarbomba(char mapa[LINHAS][COLUNAS + 1],bomba *bomba1,int andarX,int andarY,int *vivo,inimigo *inimigo1){
-
+void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int andarX,int andarY,int *vivo,inimigo inimigos[5]){
     if (bomba1->ativa == 1){
         bomba1->timer -= GetFrameTime();
             
@@ -100,7 +122,7 @@ void atualizarbomba(char mapa[LINHAS][COLUNAS + 1],bomba *bomba1,int andarX,int 
             bomba1->explosao = 1;
             bomba1->tempoExplosao = 0.5f;
 
-            // qubrar bloco com explosao
+            // quebrar bloco
             if(mapa[bomba1->y-1][bomba1->x] == '*'){
                 mapa[bomba1->y-1][bomba1->x] =' ';
             }
@@ -117,47 +139,69 @@ void atualizarbomba(char mapa[LINHAS][COLUNAS + 1],bomba *bomba1,int andarX,int 
                 mapa[bomba1->y][bomba1->x+1] =' ';
             }
 
-            // matar jogador
+            // matar o jogador
             if(bomba1->x == andarX && bomba1->y == andarY){
                 *vivo = 0;
             }
+
             if(bomba1->x == andarX && bomba1->y-1 == andarY){
-                *vivo=0;
-            }
-            if(bomba1->x == andarX && bomba1->y + 1 == andarY){
-                *vivo=0;
-            }
-            if(bomba1->x-1 == andarX && bomba1->y == andarY){
-                *vivo=0;
-            }
-            if(bomba1->x+1 == andarX && bomba1->y == andarY){
-                *vivo=0;
+                *vivo = 0;
             }
 
-            // matar inimigo
-            if(bomba1->x == inimigo1->x && bomba1->y == inimigo1->y){
-                inimigo1->vivo = 0;
+            if(bomba1->x == andarX && bomba1->y+1 == andarY){
+                *vivo = 0;
             }
-            if(bomba1->x == inimigo1->x && bomba1->y-1 == inimigo1->y){
-                inimigo1->vivo =0;
+
+            if(bomba1->x-1 == andarX && bomba1->y == andarY){
+                *vivo = 0;
             }
-            if(bomba1->x == inimigo1->x && bomba1->y+1 == inimigo1->y){
-                inimigo1->vivo =0;
+
+            if(bomba1->x+1 == andarX && bomba1->y == andarY){
+                *vivo = 0;
             }
-            if(bomba1->x-1 == inimigo1->x && bomba1->y == inimigo1->y){
-                inimigo1->vivo = 0;
-            }
-            if(bomba1->x+1 == inimigo1->x && bomba1->y == inimigo1->y){
-                inimigo1->vivo =0;
+
+            // matar inimigos
+            for(int i=0;i<5;i++){
+                if(inimigos[i].vivo ==0){
+                    continue;
+                }
+
+                if(bomba1->x == inimigos[i].x && bomba1->y == inimigos[i].y){
+                    inimigos[i].vivo = 0;
+                }
+
+                if(bomba1->x == inimigos[i].x && bomba1->y -1 == inimigos[i].y){
+                    inimigos[i].vivo = 0;
+                }
+
+                if(bomba1->x == inimigos[i].x && bomba1->y+1 == inimigos[i].y){
+                    inimigos[i].vivo = 0;
+                }
+
+                if(bomba1->x -1 ==inimigos[i].x && bomba1->y == inimigos[i].y){
+                    inimigos[i].vivo = 0;
+                }
+
+                if (bomba1->x +1 == inimigos[i].x && bomba1->y == inimigos[i].y){
+                    inimigos[i].vivo = 0;
+                }
             }
         }
     }
 
-    if (bomba1->explosao == 1){
+    if (bomba1->explosao== 1){
         bomba1->tempoExplosao -= GetFrameTime();
             
-        if (bomba1->tempoExplosao <= 0){
+        if(bomba1->tempoExplosao <=0){
             bomba1->explosao = 0;
+        }
+    }
+}
+
+void carregarMapa(char mapa[LINHAS][COLUNAS+1],char novaFase[LINHAS][COLUNAS+1]){
+    for(int y=0;y <LINHAS;y++){
+        for(int x=0;x < COLUNAS + 1;x++){
+            mapa[y][x] = novaFase[y][x];
         }
     }
 }
@@ -271,34 +315,74 @@ int main(){
         "#####################",
         "#   *   *     ***   #",
         "#  *    *  *  *     #",
-        "#    *    *    *    #",
+        "#    * *  *    *    #",
         "#     **     *   *  #",
-        "#   * *   *         #",
+        "#   * *   *  *  **  #",
         "#    *  * *     *   #",
         "#  *    *    *   *  #",
         "# *  *    *  *  *   #",
-        "#*     *      *     #",
-        "#  *     *       *  #",
-        "#    *  *    *      #",
+        "#* **  *   ** *     #",
+        "#  *   * *       *  #",
+        "#    *  *    *   *  #",
         "#####################"
     };
 
-    int vivo = 1;
+    char mapa2[LINHAS][COLUNAS+1]={
+        "#####################",
+        "#   *   *     ***   #",
+        "#  *    *  *  *  *  #",
+        "#  * *    *    *    #",
+        "# *   ** *   *   *  #",
+        "#   * *   *   **    #",
+        "#  * *  * *     *   #",
+        "#  *    *    *   *  #",
+        "# *  *    *  *  *   #",
+        "#* *  *   *  * *  * #",
+        "#  *  *  *   *   *  #",
+        "#    *  *    *  **  #",
+        "#####################"
+    };
 
-    int andarX = 10;
-    int andarY = 6;
+    char mapa3[LINHAS][COLUNAS+1]={
+        "#####################",
+        "#*  *   *  ** ***   #",
+        "#  * *  *  *  * * * #",
+        "#  * *    *    *  * #",
+        "# *   ** *   *   *  #",
+        "#   * *   *  ** * * #",
+        "# ** *  * * *   **  #",
+        "#  *  * * *  *   *  #",
+        "# *  *    *  *  *   #",
+        "#*  *  *  **  *   * #",
+        "#  * *   **   *  *  #",
+        "# *  *  *  * *   *  #",
+        "#####################"
+    };
+
+    int fase=1;
+
+    int vivo=1;
+
+    int andarX=10;
+    int andarY=6;
+
+    int faseatual=1;
 
     bomba bomba1;
 
-    bomba1.ativa = 0;
-    bomba1.explosao = 0;
+    bomba1.ativa=0;
+    bomba1.explosao=0;
 
-    inimigo inimigo1;
+    inimigo inimigos[5];
 
-    inimigo1.x = 15;
-    inimigo1.y = 8;
-    inimigo1.vivo = 1;
-    inimigo1.tempoInimigo = 0;
+    for(int i=0;i<5;i++){
+        inimigos[i].vivo=0;
+        inimigos[i].tempoInimigo=0;
+    }
+
+    inimigos[0].x = 15;
+    inimigos[0].y = 8;
+    inimigos[0].vivo = 1;
 
     InitWindow(
         COLUNAS * pixel,
@@ -314,9 +398,69 @@ int main(){
 
         colocarbomba(&bomba1, andarX, andarY);
 
-        atualizarbomba(mapa,&bomba1,andarX,andarY,&vivo,&inimigo1);
+        atualizarbomba(mapa,&bomba1,andarX,andarY,&vivo, inimigos);
 
-        moverinimigo(mapa,&inimigo1, andarX,andarY, &vivo);
+        for(int i=0;i<5;i++){
+            moverinimigo(mapa,&inimigos[i],andarX,andarY,&vivo);
+        }
+
+        int inimigosVivos = 0;
+
+        for(int i=0;i<5;i++){
+            if(inimigos[i].vivo == 1){
+                inimigosVivos++;
+            }
+        }
+
+        if(inimigosVivos == 0){
+            fase++;
+
+            andarX=10;
+            andarY=6;
+        }
+
+        if (fase==2 && faseatual != 2){
+            faseatual=2;
+            carregarMapa(mapa,mapa2);
+
+            inimigos[0].x=15;
+            inimigos[0].y=8;
+            inimigos[0].vivo=1;
+
+            inimigos[1].x=3;
+            inimigos[1].y=9;
+            inimigos[1].vivo=1;
+
+            bomba1.ativa=0;
+            bomba1.explosao=0;
+        }
+
+        if(fase==3 && faseatual != 3){
+            faseatual=3;
+            carregarMapa(mapa,mapa3);
+
+            inimigos[0].x=1;
+            inimigos[0].y=1;
+
+            inimigos[1].x= 5;
+            inimigos[1].y=3;
+
+            inimigos[2].x=10;
+            inimigos[2].y=5;
+
+            inimigos[3].x=15;
+            inimigos[3].y=7;
+
+            inimigos[4].x=18;
+            inimigos[4].y=10;
+
+            for(int i=0;i<5;i++){
+                inimigos[i].vivo=1;
+            }
+
+            bomba1.ativa = 0;
+            bomba1.explosao = 0;
+        }
 
         BeginDrawing();
         ClearBackground(BLACK);
@@ -329,7 +473,9 @@ int main(){
 
         dexplosao(bomba1);
 
-        dinimigo(inimigo1);
+        for(int i = 0; i < 5; i++){
+            dinimigo(inimigos[i]);
+        }
 
         EndDrawing();
     }
