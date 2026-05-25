@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include <stdlib.h>
 
-#define pixel 64
+int pixel = 64;
 #define LINHAS 13
 #define COLUNAS 21
 
@@ -37,14 +37,16 @@ void moverjogador(char mapa[LINHAS][COLUNAS+1],int *andarX, int *andarY){
     }
 }
 
-void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int andarX, int andarY, int *vivo){
+void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int *andarX, int *andarY, int *vidas){
 
     if(inimigo1->vivo == 0){
         return;
     }
 
-    if(inimigo1->x == andarX && inimigo1->y == andarY){
-        *vivo = 0;
+    if(inimigo1->x == *andarX && inimigo1->y == *andarY){
+        (*vidas)--;
+        *andarX = 10;
+        *andarY = 6;
     }
 
     inimigo1->tempoInimigo += GetFrameTime();
@@ -52,22 +54,22 @@ void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int andarX, in
     if(inimigo1->tempoInimigo >= 0.7f){
         int mexeu = 0;
 
-        if(andarX>inimigo1->x && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x + 1] != '*'){
+        if(*andarX>inimigo1->x && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x + 1] != '*'){
             inimigo1->x++;
             mexeu=1;
         }
 
-        else if(andarX < inimigo1->x && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
+        else if(*andarX < inimigo1->x && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
             inimigo1->x--;
             mexeu=1;
         }
 
-        else if(andarY > inimigo1->y && mapa[inimigo1->y+ 1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
+        else if(*andarY > inimigo1->y && mapa[inimigo1->y+ 1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
             inimigo1->y++;
             mexeu=1;
         }
 
-        else if(andarY < inimigo1->y && mapa[inimigo1->y-1][inimigo1->x] != '#' && mapa[inimigo1->y -1][inimigo1->x] != '*'){
+        else if(*andarY < inimigo1->y && mapa[inimigo1->y-1][inimigo1->x] != '#' && mapa[inimigo1->y -1][inimigo1->x] != '*'){
             inimigo1->y--;
             mexeu=1;
         }
@@ -92,8 +94,10 @@ void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int andarX, in
             }
         }
 
-        if(inimigo1->x == andarX && inimigo1->y == andarY){
-            *vivo = 0;
+        if(inimigo1->x == *andarX && inimigo1->y ==*andarY){
+            (*vidas)--;
+            *andarX = 10;
+            *andarY = 6;
         }
 
         inimigo1->tempoInimigo = 0;
@@ -112,7 +116,7 @@ void colocarbomba(bomba* bomba1, int andarX,int andarY){
     }
 }
 
-void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int andarX,int andarY,int *vivo,inimigo inimigos[5]){
+void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int *andarX,int *andarY,int *vidas,inimigo inimigos[5]){
     if (bomba1->ativa == 1){
         bomba1->timer -= GetFrameTime();
             
@@ -140,24 +144,34 @@ void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int andarX,int an
             }
 
             // matar o jogador
-            if(bomba1->x == andarX && bomba1->y == andarY){
-                *vivo = 0;
+            if(bomba1->x == *andarX && bomba1->y == *andarY){
+                (*vidas)--;
+                *andarX = 10;
+                *andarY = 6;
             }
 
-            if(bomba1->x == andarX && bomba1->y-1 == andarY){
-                *vivo = 0;
+            if(bomba1->x == *andarX && bomba1->y-1 == *andarY){
+                (*vidas)--;
+                *andarX = 10;
+                *andarY = 6;
             }
 
-            if(bomba1->x == andarX && bomba1->y+1 == andarY){
-                *vivo = 0;
+            if(bomba1->x == *andarX && bomba1->y+1 == *andarY){
+                (*vidas)--;
+                *andarX = 10;
+                *andarY = 6;
             }
 
-            if(bomba1->x-1 == andarX && bomba1->y == andarY){
-                *vivo = 0;
+            if(bomba1->x-1 == *andarX && bomba1->y == *andarY){
+                (*vidas)--;
+                *andarX = 10;
+                *andarY = 6;
             }
 
-            if(bomba1->x+1 == andarX && bomba1->y == andarY){
-                *vivo = 0;
+            if(bomba1->x+1 == *andarX && bomba1->y == *andarY){
+                (*vidas)--;
+                *andarX = 10;
+                *andarY = 6;
             }
 
             // matar inimigos
@@ -381,7 +395,7 @@ int main(){
 
     int fase=1;
 
-    int vivo=1;
+    int vidas = 3;
 
     int andarX=10;
     int andarY=6;
@@ -412,6 +426,15 @@ int main(){
 
     ToggleFullscreen();
 
+    int larguraBloco = GetScreenWidth() / COLUNAS;
+    int alturaBloco = GetScreenHeight() / LINHAS;
+
+    pixel = larguraBloco;
+
+    if(alturaBloco < pixel){
+        pixel = alturaBloco;
+}
+
     Texture2D menu = LoadTexture("menu.png.png");
     Texture2D jogador = LoadTexture("player.png");
     Texture2D inimigo = LoadTexture("inimigo.png");
@@ -419,13 +442,15 @@ int main(){
     Texture2D parede = LoadTexture("parede.png");
     Texture2D bloco = LoadTexture("bloco.png");
     Texture2D chao = LoadTexture("chao.png");
+    Texture2D telaFinal = LoadTexture("final.png");
+    Texture2D gameOver = LoadTexture("gameover.png");
 
     SetTargetFPS(60);
     
     int offsetX =(GetScreenWidth() - (COLUNAS * pixel)) / 2;
     int offsetY =(GetScreenHeight() - (LINHAS * pixel))/ 2;
 
-    while(!WindowShouldClose() && vivo == 1){
+    while(!WindowShouldClose()){
 
         if(IsKeyPressed(KEY_K)){
             for(int i = 0; i < 5; i++){
@@ -463,10 +488,10 @@ int main(){
             Vector2 mouse=GetMousePosition();
 
             Rectangle botaojogar={
-                GetScreenWidth()/2 - 150,
-                GetScreenHeight()/2 + 4,
-                310,
-                60
+                GetScreenWidth()/2 - 220,
+                GetScreenHeight()/2 + 10,
+                450,
+                70
             };
 
             if(CheckCollisionPointRec(mouse,botaojogar)){
@@ -478,22 +503,46 @@ int main(){
                 );
             }
 
-            EndDrawing();
-
             if(CheckCollisionPointRec(mouse, botaojogar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                estadoJogo = 1;
+                estadoJogo =1;
             }
+
+            Rectangle botaoSair={
+                GetScreenWidth()/2 - 220,
+                GetScreenHeight()/2 + 185,
+                450,
+                70
+            };
+
+
+            if(CheckCollisionPointRec(mouse, botaoSair)){
+                DrawRectangleRoundedLines(
+                    botaoSair,
+                    0.3f,
+                    10, 
+                    DARKBLUE
+                );
+
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+
+                    CloseWindow();
+                }
+            }
+
+            EndDrawing();
             continue;
         }
+
+        
 
         moverjogador(mapa,&andarX,&andarY);
 
         colocarbomba(&bomba1, andarX, andarY);
 
-        atualizarbomba(mapa,&bomba1,andarX,andarY,&vivo, inimigos);
+        atualizarbomba(mapa,&bomba1,&andarX,&andarY,&vidas,inimigos);
 
         for(int i=0;i<5;i++){
-            moverinimigo(mapa,&inimigos[i],andarX,andarY,&vivo);
+           moverinimigo(mapa,&inimigos[i],&andarX,&andarY,&vidas);
         }
 
         if (fase==2 && faseatual != 2){
@@ -550,6 +599,10 @@ int main(){
             if(inimigos[i].vivo == 1){
                 inimigosVivos++;
             }
+        }
+
+        if(vidas <= 0){
+            estadoJogo = 4;
         }
 
         if(inimigosVivos == 0 && estadoJogo == 1){
@@ -653,8 +706,182 @@ int main(){
             continue;
         }
 
-        if(estadoJogo == 3)
+        if(estadoJogo == 3){
+            BeginDrawing();
 
+            ClearBackground(BLACK);
+
+            dmapa(mapa,parede,bloco,chao,offsetX,offsetY);
+
+            djogador(jogador, andarX, andarY,offsetX, offsetY);
+
+            dbomba(bomba1, offsetX, offsetY);
+
+            dexplosao(bomba1, offsetX, offsetY);
+
+            for(int i = 0; i < 5; i++){
+                dinimigo(inimigo,inimigos[i],offsetX,offsetY);
+            }
+
+            DrawRectangle(
+                0,
+                0,
+                GetScreenWidth(),
+                GetScreenHeight(),
+                Fade(BLACK, 0.5f)
+            );
+
+            float escalaFinal = 0.7f;
+
+            float larguraFinal = telaFinal.width * escalaFinal;
+            float alturaFinal = telaFinal.height * escalaFinal;
+
+            float posXFinal = (GetScreenWidth() - larguraFinal) / 2;
+            float posYFinal = (GetScreenHeight() - alturaFinal) / 2;
+
+            Rectangle source = {
+                0,
+                0,
+                telaFinal.width,
+                telaFinal.height
+            };
+
+            Rectangle dest = {
+                0,
+                0,
+                GetScreenWidth(),
+                GetScreenHeight()
+            };
+
+            DrawTexturePro(
+                telaFinal,
+                source,
+                dest,
+                (Vector2){0,0},
+                0.0f,
+                WHITE
+            );
+
+            EndDrawing();
+
+            continue;
+        }
+
+        if(estadoJogo == 4){
+            BeginDrawing();
+
+            ClearBackground(BLACK);
+
+            Rectangle source={
+                0,
+                0,
+                gameOver.width,
+                gameOver.height
+            };
+
+            Rectangle dest={
+                0,
+                0,
+                GetScreenWidth(),
+                GetScreenHeight()
+            };
+
+            DrawTexturePro(
+                gameOver,
+                source,
+                dest,
+                (Vector2){0,0},
+                0.0f,
+                WHITE
+            );
+
+            Vector2 mouse=GetMousePosition();
+
+            Rectangle botaoReiniciar={
+                GetScreenWidth()/2 - 220,
+                GetScreenHeight()/2 + 100,
+                450,
+                70
+            };
+
+            Rectangle botaoMenu = {
+                GetScreenWidth()/2 - 220,
+                GetScreenHeight()/2 + 185,
+                450,
+                70
+            };
+
+            if(CheckCollisionPointRec(mouse, botaoReiniciar)){
+                DrawRectangleRoundedLines(
+                    botaoReiniciar,
+                    0.3f,
+                    10,
+                    YELLOW
+                );
+
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    vidas = 3;
+
+                    fase = 1;
+                    faseatual = 1;
+
+                    andarX = 10;
+                    andarY = 6;
+
+                    estadoJogo = 1;
+
+                    carregarMapa(mapa,mapa);
+
+                    inimigos[0].x = 15;
+                    inimigos[0].y = 8;
+                    inimigos[0].vivo = 1;
+
+                    for(int i=1;i<5;i++){
+                        inimigos[i].vivo = 0;
+                    }
+
+                    bomba1.ativa = 0;
+                    bomba1.explosao = 0;
+                }
+            }
+
+            if(CheckCollisionPointRec(mouse, botaoMenu)){
+                DrawRectangleRoundedLines(
+                    botaoMenu,
+                    0.3f,
+                    10,
+                    DARKBLUE
+                );
+
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    vidas = 3;
+
+                    fase = 1;
+                    faseatual = 1;
+
+                    andarX = 10;
+                    andarY = 6;
+
+                    estadoJogo = 0;
+
+                    carregarMapa(mapa,mapa);
+
+                    inimigos[0].x = 15;
+                    inimigos[0].y = 8;
+                    inimigos[0].vivo = 1;
+
+                    for(int i=1;i<5;i++){
+                        inimigos[i].vivo = 0;
+                    }
+
+                    bomba1.ativa = 0;
+                    bomba1.explosao = 0;
+                }
+            }
+
+            EndDrawing();
+            continue;
+        }
 
         BeginDrawing();
         ClearBackground(BLACK);
@@ -681,8 +908,10 @@ int main(){
     UnloadTexture(parede);
     UnloadTexture(bloco);
     UnloadTexture(chao);
+    UnloadTexture(telaFinal);
+    UnloadTexture(gameOver);
 
     CloseWindow();
 
     return 0;
-}
+    }
