@@ -524,8 +524,27 @@ int main(){
                 );
 
                 if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-
                     CloseWindow();
+                }
+            }
+
+            Rectangle botaoCreditosinicio={
+                GetScreenWidth()/2 - 220,
+                GetScreenHeight()/2 + 100,
+                450,
+                70
+            };
+
+            if(CheckCollisionPointRec(mouse, botaoCreditosinicio)){
+                DrawRectangleRoundedLines(
+                    botaoCreditosinicio,
+                    0.3f,
+                    10, 
+                    DARKBLUE
+                );
+
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    estadoJogo = 5;
                 }
             }
 
@@ -731,14 +750,6 @@ int main(){
                 Fade(BLACK, 0.5f)
             );
 
-            float escalaFinal = 0.7f;
-
-            float larguraFinal = telaFinal.width * escalaFinal;
-            float alturaFinal = telaFinal.height * escalaFinal;
-
-            float posXFinal = (GetScreenWidth() - larguraFinal) / 2;
-            float posYFinal = (GetScreenHeight() - alturaFinal) / 2;
-
             Rectangle source = {
                 0,
                 0,
@@ -762,8 +773,70 @@ int main(){
                 WHITE
             );
 
-            EndDrawing();
+            Vector2 mouse = GetMousePosition();
 
+            Rectangle botaoMenu={
+                GetScreenWidth()/2 - 288,
+                GetScreenHeight()/2 +100,
+                585,
+                70
+            };
+
+            if(CheckCollisionPointRec(mouse, botaoMenu)){
+                DrawRectangleRoundedLines(
+                    botaoMenu,
+                    0.3f,
+                    10,
+                    YELLOW
+                );
+
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    vidas =3;
+
+                    fase=1;
+                    faseatual=1;
+
+                    andarX=10;
+                    andarY =6;
+
+                    estadoJogo = 0;
+
+                    carregarMapa(mapa,mapa);
+
+                    inimigos[0].x = 15;
+                    inimigos[0].y = 8;
+                    inimigos[0].vivo = 1;
+
+                    for(int i=1;i<5;i++){
+                        inimigos[i].vivo = 0;
+                    }
+
+                    bomba1.ativa = 0;
+                    bomba1.explosao = 0;
+                }
+            }
+
+            Rectangle botaoCreditos={
+                GetScreenWidth()/2 - 288,
+                GetScreenHeight()/2 +186,
+                585,
+                70
+            };
+
+            if(CheckCollisionPointRec(mouse, botaoCreditos)){
+                DrawRectangleRoundedLines(
+                    botaoCreditos,
+                    0.3f,
+                    10,
+                    DARKBLUE
+                );
+
+                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                    estadoJogo = 5;
+                }
+            }
+
+            EndDrawing();
             continue;
         }
 
@@ -871,12 +944,97 @@ int main(){
                     inimigos[0].vivo = 1;
 
                     for(int i=1;i<5;i++){
-                        inimigos[i].vivo = 0;
+                        inimigos[i].vivo =0;
                     }
 
                     bomba1.ativa = 0;
                     bomba1.explosao = 0;
                 }
+            }
+
+            EndDrawing();
+            continue;
+        }
+
+        if(estadoJogo==5){
+            BeginDrawing();
+
+            ClearBackground(BLACK);
+
+            DrawText(
+                "CREDITOS",
+                GetScreenWidth()/2 - 180,
+                120,
+                60,
+                GOLD
+            );
+
+            DrawText(
+                "Programacao:",
+                200,
+                260,
+                40,
+                WHITE
+            );
+
+            DrawText(
+                "Luis Felipe, Hugo e Kaike",
+                520,
+                260,
+                40,
+                YELLOW
+            );
+
+            DrawText(
+                "Pixel Arts:",
+                200,
+                340,
+                40,
+                WHITE
+            );
+
+            DrawText(
+                "Luis Felipe",
+                520,
+                340,
+                40,
+                YELLOW
+            );
+
+            DrawText(
+                "Framework:",
+                200,
+                420,
+                40,
+                WHITE
+            );
+
+            DrawText(
+                "Raylib",
+                520,
+                420,
+                40,
+                YELLOW
+            );
+
+            DrawText(
+                "Obrigado por jogar!",
+                GetScreenWidth()/2 - 240,
+                600,
+                50,
+                GREEN
+            );
+
+            DrawText(
+                "Pressione ENTER para voltar ao menu!",
+                GetScreenWidth()/2 - 330,
+                720,
+                30,
+                LIGHTGRAY
+            );
+
+            if(IsKeyPressed(KEY_ENTER)){
+                estadoJogo = 0;
             }
 
             EndDrawing();
