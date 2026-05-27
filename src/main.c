@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 int pixel = 64;
 #define LINHAS 13
@@ -26,6 +27,21 @@ typedef struct inimigo{
     int vivo;
     float tempoInimigo;
 }inimigo;
+
+typedef struct score{
+    float tempo;
+    struct score *prox;
+}score;
+
+void adicionarScore(score **lista, float tempo){
+
+    score *novo = malloc(sizeof(score));
+
+    novo->tempo = tempo;
+    novo->prox = *lista;
+
+    *lista = novo;
+}
 
 void moverjogador(char mapa[LINHAS][COLUNAS+1],int *andarX, int *andarY){
 
@@ -466,6 +482,11 @@ int main(){
 
     int vidas = 3;
 
+    float tempoJogo = 0;
+    float topScore = 9999;
+
+    score *listaScores = NULL;
+
     int andarX=10;
     int andarY=6;
 
@@ -521,12 +542,23 @@ int main(){
     Texture2D explosao = LoadTexture("assets/explosao.png");
     Texture2D bombaTex = LoadTexture("assets/bomba.png");
 
+    FILE *arquivo = fopen("topscore.txt", "r");
+
+    if(arquivo != NULL){
+        fscanf(arquivo, "%f", &topScore);
+        fclose(arquivo);
+    }
+
     SetTargetFPS(60);
     
     int offsetX =(GetScreenWidth() - (COLUNAS * pixel)) / 2;
     int offsetY =(GetScreenHeight() - (LINHAS * pixel))/ 2;
 
     while(!WindowShouldClose()){
+
+        if(estadoJogo == 1){
+            tempoJogo += GetFrameTime();
+        }
 
         if(IsKeyPressed(KEY_K)){
             for(int i = 0; i < 5; i++){
@@ -583,6 +615,7 @@ int main(){
                 vidas = 3;
 
                 fase = 1;
+                tempoJogo = 0;
                 faseatual = 1;
 
                 andarX = 10;
@@ -723,6 +756,19 @@ int main(){
 
         if(inimigosVivos == 0 && estadoJogo == 1){
             if(fase == 3){
+                adicionarScore(&listaScores, tempoJogo);
+
+                if(tempoJogo < topScore){
+                    topScore = tempoJogo;
+
+                    FILE *arquivo = fopen("topscore.txt", "w");
+
+                    if(arquivo != NULL){
+                        fprintf(arquivo, "%.2f", topScore);
+                        fclose(arquivo);
+                    }
+                }
+
                 estadoJogo = 3;
             }
             else{
@@ -870,11 +916,27 @@ int main(){
                 WHITE
             );
 
+            DrawText(
+                TextFormat("%.2f", tempoJogo),
+                GetScreenWidth()/2 - 160,
+                680,
+                35,
+                WHITE
+            );
+
+            DrawText(
+                TextFormat("%.2f", topScore),
+                GetScreenWidth()/2 + 180,
+                680,
+                35,
+                GOLD
+            );
+
             Vector2 mouse = GetMousePosition();
 
             Rectangle botaoMenu={
                 GetScreenWidth()/2 - 288,
-                GetScreenHeight()/2 +100,
+                GetScreenHeight()/2 +198,
                 585,
                 70
             };
@@ -915,7 +977,7 @@ int main(){
 
             Rectangle botaoCreditos={
                 GetScreenWidth()/2 - 288,
-                GetScreenHeight()/2 +186,
+                GetScreenHeight()/2 +282,
                 585,
                 70
             };
@@ -993,6 +1055,7 @@ int main(){
                     vidas = 3;
 
                     fase = 1;
+                    tempoJogo = 0;
                     faseatual = 1;
 
                     andarX = 10;
@@ -1027,6 +1090,7 @@ int main(){
                     vidas = 3;
 
                     fase = 1;
+                    tempoJogo = 0;
                     faseatual = 1;
 
                     andarX = 10;
@@ -1169,6 +1233,14 @@ int main(){
     UnloadTexture(bombaTex);
 
     CloseWindow();
+
+    score *atual = listaScores;
+
+    while(atual != NULL){
+        score *temp = atual;
+        atual = atual->prox;
+        free(temp);
+    }
 
     return 0;
     }
