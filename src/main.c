@@ -12,7 +12,13 @@ typedef struct bomba{
     float timer;
     int explosao;
     float tempoExplosao;
-}bomba;
+
+    int frameExplosao;
+    float tempoFrame;
+
+    int frameBomba;
+    float tempoBomba;
+} bomba;
 
 typedef struct inimigo{
     int x;
@@ -113,11 +119,25 @@ void colocarbomba(bomba* bomba1, int andarX,int andarY){
         bomba1->ativa = 1;
 
         bomba1->timer = 4.0f;
+
+        bomba1->frameBomba = 0;
+        bomba1->tempoBomba = 0;
     }
 }
 
 void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int *andarX,int *andarY,int *vidas,inimigo inimigos[5]){
     if (bomba1->ativa == 1){
+        bomba1->tempoBomba += GetFrameTime();
+
+        if(bomba1->tempoBomba >= 0.8f){
+
+            if(bomba1->frameBomba < 2){
+                bomba1->frameBomba++;
+            }
+
+            bomba1->tempoBomba = 0;
+        }
+
         bomba1->timer -= GetFrameTime();
             
         if (bomba1->timer <= 0){
@@ -125,6 +145,9 @@ void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int *andarX,int *
             bomba1->ativa = 0;
             bomba1->explosao = 1;
             bomba1->tempoExplosao = 0.5f;
+
+            bomba1->frameExplosao = 0;
+            bomba1->tempoFrame = 0;
 
             // quebrar bloco
             if(mapa[bomba1->y-1][bomba1->x] == '*'){
@@ -203,10 +226,22 @@ void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int *andarX,int *
         }
     }
 
-    if (bomba1->explosao== 1){
+    if (bomba1->explosao == 1){
+
         bomba1->tempoExplosao -= GetFrameTime();
-            
-        if(bomba1->tempoExplosao <=0){
+
+        bomba1->tempoFrame += GetFrameTime();
+
+        if(bomba1->tempoFrame >= 0.05f){
+            bomba1->frameExplosao++;
+            bomba1->tempoFrame = 0;
+        }
+
+        if(bomba1->frameExplosao > 11){
+            bomba1->frameExplosao = 11;
+        }
+
+        if(bomba1->tempoExplosao <= 0){
             bomba1->explosao = 0;
         }
     }
@@ -275,59 +310,93 @@ void djogador(Texture2D jogador, int x,int y,int offsetX,int offsetY){
     );
 }
 
-void dbomba(bomba bomba1,int offsetX,int offsetY){
-    if (bomba1.ativa == 1){
-        DrawRectangle(
-            bomba1.x * pixel + offsetX,
-            bomba1.y * pixel + offsetY,
-            pixel,
-            pixel,
-            BLUE
+void dbomba(Texture2D bombaTex, bomba bomba1, int offsetX, int offsetY){
+
+    if(bomba1.ativa == 1){
+
+        int frameWidth = bombaTex.width / 3;
+        int frameHeight = bombaTex.height;
+
+        Rectangle source = {
+            bomba1.frameBomba * frameWidth,
+            0,
+            frameWidth,
+            frameHeight
+        };
+
+        Rectangle dest = {
+            bomba1.x * pixel - 10 + offsetX,
+            bomba1.y * pixel - 10 + offsetY,
+            pixel + 20,
+            pixel + 20
+        };
+
+        DrawTexturePro(
+            bombaTex,
+            source,
+            dest,
+            (Vector2){0,0},
+            0.0f,
+            WHITE
         );
     }
 }
 
-void dexplosao(bomba bomba1, int offsetX, int offsetY){
-    if (bomba1.explosao ==1){
-        DrawRectangle(
-            bomba1.x*pixel + offsetX,
-            bomba1.y*pixel + offsetY,
-            pixel,
-            pixel,
-            YELLOW
-        );
+void desenharFrameExplosao(Texture2D explosao, int frame, int x, int y, int offsetX, int offsetY){
 
-        DrawRectangle(
-            bomba1.x * pixel +offsetX,
-            (bomba1.y-1) * pixel + offsetY,
-            pixel,
-            pixel,
-            ORANGE
-        );
+    int frameWidth = explosao.width / 6;
+    int frameHeight = explosao.height / 2;
 
-        DrawRectangle(
-            bomba1.x *pixel+ offsetX,
-            (bomba1.y+1) *pixel+ offsetY,
-            pixel,
-            pixel,
-            ORANGE
-        );
+    int coluna = frame % 6;
+    int linha = frame / 6;
 
-        DrawRectangle(
-            (bomba1.x-1)* pixel+offsetX,
-            bomba1.y * pixel + offsetY,
-            pixel,
-            pixel,
-            ORANGE
-        );
+    Rectangle source = {
+        coluna * frameWidth,
+        linha * frameHeight,
+        frameWidth,
+        frameHeight
+    };
 
-        DrawRectangle(
-            (bomba1.x+1) * pixel+ offsetX,
-            bomba1.y * pixel+offsetY,
-            pixel,
-            pixel,
-            ORANGE
-        );
+    Rectangle dest = {
+        x * pixel + offsetX,
+        y * pixel + offsetY,
+        pixel,
+        pixel
+    };
+
+    DrawTexturePro(
+        explosao,
+        source,
+        dest,
+        (Vector2){0,0},
+        0.0f,
+        WHITE
+    );
+}
+
+void dexplosao(Texture2D explosao, bomba bomba1, int offsetX, int offsetY){
+
+    if(bomba1.explosao == 1){
+
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,
+                              bomba1.x, bomba1.y,
+                              offsetX, offsetY);
+
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,
+                              bomba1.x, bomba1.y - 1,
+                              offsetX, offsetY);
+
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,
+                              bomba1.x, bomba1.y + 1,
+                              offsetX, offsetY);
+
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,
+                              bomba1.x - 1, bomba1.y,
+                              offsetX, offsetY);
+
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,
+                              bomba1.x + 1, bomba1.y,
+                              offsetX, offsetY);
     }
 }
 
@@ -407,6 +476,12 @@ int main(){
     bomba1.ativa=0;
     bomba1.explosao=0;
 
+    bomba1.frameExplosao = 0;
+    bomba1.tempoFrame = 0;
+
+    bomba1.frameBomba = 0;
+    bomba1.tempoBomba = 0;
+
     inimigo inimigos[5];
 
     for(int i=0;i<5;i++){
@@ -434,16 +509,17 @@ int main(){
     if(alturaBloco < pixel){
         pixel = alturaBloco;
 }
-
-    Texture2D menu = LoadTexture("menu.png.png");
-    Texture2D jogador = LoadTexture("player.png");
-    Texture2D inimigo = LoadTexture("inimigo.png");
-    Texture2D faseCompleta = LoadTexture("fasecompleta.png");
-    Texture2D parede = LoadTexture("parede.png");
-    Texture2D bloco = LoadTexture("bloco.png");
-    Texture2D chao = LoadTexture("chao.png");
-    Texture2D telaFinal = LoadTexture("final.png");
-    Texture2D gameOver = LoadTexture("gameover.png");
+    Texture2D menu = LoadTexture("assets/menu.png.png");
+    Texture2D jogador = LoadTexture("assets/player.png");
+    Texture2D inimigo = LoadTexture("assets/inimigo.png");
+    Texture2D telaFinal = LoadTexture("assets/final.png");
+    Texture2D gameOver = LoadTexture("assets/gameover.png");
+    Texture2D parede = LoadTexture("assets/parede.png");
+    Texture2D bloco = LoadTexture("assets/bloco.png");
+    Texture2D chao = LoadTexture("assets/chao.png");
+    Texture2D faseCompleta = LoadTexture("assets/fasecompleta.png");
+    Texture2D explosao = LoadTexture("assets/explosao.png");
+    Texture2D bombaTex = LoadTexture("assets/bomba.png");
 
     SetTargetFPS(60);
     
@@ -504,7 +580,28 @@ int main(){
             }
 
             if(CheckCollisionPointRec(mouse, botaojogar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                estadoJogo =1;
+                vidas = 3;
+
+                fase = 1;
+                faseatual = 1;
+
+                andarX = 10;
+                andarY = 6;
+
+                carregarMapa(mapa, mapa);
+
+                inimigos[0].x = 15;
+                inimigos[0].y = 8;
+                inimigos[0].vivo = 1;
+
+                for(int i = 1; i < 5; i++){
+                    inimigos[i].vivo = 0;
+                }
+
+                bomba1.ativa = 0;
+                bomba1.explosao = 0;
+
+                estadoJogo = 1;
             }
 
             Rectangle botaoSair={
@@ -642,9 +739,9 @@ int main(){
 
             djogador(jogador,andarX,andarY,offsetX,offsetY);
 
-            dbomba(bomba1,offsetX,offsetY);
+            dbomba(bombaTex, bomba1, offsetX, offsetY);
 
-            dexplosao(bomba1,offsetX,offsetY);
+            dexplosao(explosao, bomba1, offsetX, offsetY);
 
             for(int i=0;i <5;i++){
                 dinimigo(inimigo,inimigos[i],offsetX,offsetY);
@@ -734,9 +831,9 @@ int main(){
 
             djogador(jogador, andarX, andarY,offsetX, offsetY);
 
-            dbomba(bomba1, offsetX, offsetY);
+            dbomba(bombaTex, bomba1, offsetX, offsetY);
 
-            dexplosao(bomba1, offsetX, offsetY);
+            dexplosao(explosao, bomba1, offsetX, offsetY);
 
             for(int i = 0; i < 5; i++){
                 dinimigo(inimigo,inimigos[i],offsetX,offsetY);
@@ -1048,9 +1145,9 @@ int main(){
 
         djogador(jogador, andarX, andarY,offsetX, offsetY);
 
-        dbomba(bomba1, offsetX, offsetY);
+        dbomba(bombaTex, bomba1, offsetX, offsetY);
 
-        dexplosao(bomba1, offsetX, offsetY);
+        dexplosao(explosao, bomba1, offsetX, offsetY);
 
         for(int i = 0; i < 5; i++){
             dinimigo(inimigo,inimigos[i],offsetX,offsetY);
@@ -1068,6 +1165,8 @@ int main(){
     UnloadTexture(chao);
     UnloadTexture(telaFinal);
     UnloadTexture(gameOver);
+    UnloadTexture(explosao);
+    UnloadTexture(bombaTex);
 
     CloseWindow();
 
