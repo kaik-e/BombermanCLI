@@ -393,26 +393,15 @@ void desenharFrameExplosao(Texture2D explosao, int frame, int x, int y, int offs
 void dexplosao(Texture2D explosao, bomba bomba1, int offsetX, int offsetY){
 
     if(bomba1.explosao == 1){
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,bomba1.x, bomba1.y,offsetX, offsetY);
 
-        desenharFrameExplosao(explosao, bomba1.frameExplosao,
-                              bomba1.x, bomba1.y,
-                              offsetX, offsetY);
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,bomba1.x, bomba1.y - 1, offsetX, offsetY);
 
-        desenharFrameExplosao(explosao, bomba1.frameExplosao,
-                              bomba1.x, bomba1.y - 1,
-                              offsetX, offsetY);
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,bomba1.x, bomba1.y + 1,offsetX, offsetY);
 
-        desenharFrameExplosao(explosao, bomba1.frameExplosao,
-                              bomba1.x, bomba1.y + 1,
-                              offsetX, offsetY);
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,bomba1.x - 1, bomba1.y,offsetX, offsetY);
 
-        desenharFrameExplosao(explosao, bomba1.frameExplosao,
-                              bomba1.x - 1, bomba1.y,
-                              offsetX, offsetY);
-
-        desenharFrameExplosao(explosao, bomba1.frameExplosao,
-                              bomba1.x + 1, bomba1.y,
-                              offsetX, offsetY);
+        desenharFrameExplosao(explosao, bomba1.frameExplosao,bomba1.x + 1, bomba1.y,offsetX, offsetY);
     }
 }
 
@@ -422,6 +411,374 @@ void dinimigo(Texture2D inimigo, struct inimigo inimigo1,int offsetX, int offset
             0.0f,
             0.17f,
             WHITE
+        );
+    }
+}
+
+void resetarJogo(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,inimigo inimigos[5],int *vidas,int *fase,int *faseatual,int *andarX,int *andarY,float *tempoJogo){
+    *vidas =3;
+
+    *fase=1;
+    *faseatual=1;
+
+    *tempoJogo=0;
+
+    *andarX=10;
+    *andarY =6;
+
+    carregarMapa(mapa, mapa);
+
+    inimigos[0].x = 15;
+    inimigos[0].y = 8;
+    inimigos[0].vivo = 1;
+
+    for(int i=1;i<5;i++){
+        inimigos[i].vivo = 0;
+    }
+
+    bomba1->ativa = 0;
+    bomba1->explosao = 0;
+}
+
+void desenharCreditos(){
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    DrawText(
+        "CREDITOS",
+        GetScreenWidth()/ 2- 180,
+        120,
+        60,
+        GOLD
+    );
+
+    DrawText(
+        "Programacao:",
+        200,
+        260,
+        40,
+        WHITE
+    );
+
+    DrawText(
+        "Luis Felipe, Hugo e Kaike",
+        520,
+        260,
+        40,
+        YELLOW
+    );
+
+    DrawText(
+        "Pixel Arts:",
+        200,
+        340,
+        40,
+        WHITE
+    );
+
+    DrawText(
+        "Luis Felipe",
+        520,
+        340,
+        40,
+        YELLOW
+    );
+
+    DrawText(
+        "Framework:",
+        200,
+        420,
+        40,
+        WHITE
+    );
+
+    DrawText(
+        "Raylib",
+        520,
+        420,
+        40,
+        YELLOW
+    );
+
+    DrawText(
+        "Obrigado por jogar!",
+        GetScreenWidth() / 2-240,
+        600,
+        50,
+        GREEN
+    );
+
+    DrawText(
+        "Pressione ENTER para voltar ao menu!",
+        GetScreenWidth()/ 2-330,
+        720,
+        30,
+        LIGHTGRAY
+    );
+
+    EndDrawing();
+}
+
+void desenharBotao(Rectangle botao,Color cor){
+    Vector2 mouse = GetMousePosition();
+
+    if(CheckCollisionPointRec(mouse, botao)){
+        DrawRectangleRoundedLines(
+            botao,
+            0.3f,
+            10,
+            cor
+        );
+    }
+}
+
+void desenharMenu(Texture2D menu){
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    Rectangle source={
+        0,
+        0,
+        menu.width,
+        menu.height
+    };
+
+    Rectangle dest={
+        0,
+        0,
+        GetScreenWidth(),
+        GetScreenHeight()
+    };
+
+    DrawTexturePro(
+        menu,
+        source,
+        dest,
+        (Vector2){0,0},
+        0.0f,
+        WHITE
+    );
+
+    Vector2 mouse = GetMousePosition();
+
+    Rectangle botaojogar ={
+        GetScreenWidth() /2-220,
+        GetScreenHeight() /2+ 0,
+        450,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse,botaojogar)){
+        desenharBotao(botaojogar, GOLD);
+    }
+
+    Rectangle botaoSair = {
+        GetScreenWidth()/ 2-220,
+        GetScreenHeight()/2+185,
+        450,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse,botaoSair)){
+        desenharBotao(botaoSair, DARKBLUE);
+    }
+
+    Rectangle botaoCreditosinicio= {
+        GetScreenWidth()/2 - 220,
+        GetScreenHeight()/2 + 100,
+        450,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse,botaoCreditosinicio)){
+        desenharBotao(botaoCreditosinicio, DARKBLUE);
+    }
+
+    EndDrawing();
+}
+
+void desenharGameOver(Texture2D gameOver){
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    Rectangle source={
+        0,
+        0,
+        gameOver.width,
+        gameOver.height
+    };
+
+    Rectangle dest={
+        0,
+        0,
+        GetScreenWidth(),
+        GetScreenHeight()
+    };
+
+    DrawTexturePro(
+        gameOver,
+        source,
+        dest,
+        (Vector2){0,0},
+        0.0f,
+        WHITE
+    );
+
+    Vector2 mouse = GetMousePosition();
+
+    Rectangle botaoReiniciar={
+        GetScreenWidth() / 2-220,
+        GetScreenHeight() / 2+100,
+        450,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse,botaoReiniciar)){
+        desenharBotao(botaoReiniciar, YELLOW);
+    }
+
+    Rectangle botaoMenu={
+        GetScreenWidth()/2 - 220,
+        GetScreenHeight()/2 + 185,
+        450,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse,botaoMenu)){
+        desenharBotao(botaoMenu, DARKBLUE);
+    }
+
+    EndDrawing();
+}
+
+void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Texture2D chao,Texture2D jogador,Texture2D inimigoTex,
+    Texture2D bombaTex,Texture2D explosao,char mapa[LINHAS][COLUNAS+1],bomba bomba1,inimigo inimigos[5],int andarX,int andarY,
+    int offsetX,int offsetY,float tempoJogo,float topScore){
+
+    desenharGameplay(mapa,parede,bloco,chao,jogador,inimigoTex,bombaTex,explosao,bomba1,inimigos, 
+        andarX,andarY,offsetX,offsetY);
+
+    DrawRectangle(
+        0,
+        0,
+        GetScreenWidth(),
+        GetScreenHeight(),
+        Fade(BLACK,0.5f)
+    );
+
+    Rectangle source={
+        0,
+        0,
+        telaFinal.width,
+        telaFinal.height
+    };
+
+    Rectangle dest={
+        0,
+        0,
+        GetScreenWidth(),
+        GetScreenHeight()
+    };
+
+    DrawTexturePro(
+        telaFinal,
+        source,
+        dest,
+        (Vector2){0,0},
+        0.0f,
+        WHITE
+    );
+
+    DrawText(
+        TextFormat("%.2f", tempoJogo),
+        GetScreenWidth() / 2-160,
+        680,
+        35,
+        WHITE
+    );
+
+    DrawText(
+        TextFormat("%.2f", topScore),
+        GetScreenWidth() / 2+180,
+        680,
+        35,
+        GOLD
+    );
+
+    Vector2 mouse=GetMousePosition();
+
+    Rectangle botaoMenu={
+        GetScreenWidth() / 2-288,
+        GetScreenHeight() / 2+198,
+        585,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse,botaoMenu)){
+        desenharBotao(botaoMenu, YELLOW);
+    }
+
+    Rectangle botaoCreditos={
+        GetScreenWidth()/2 -288,
+        GetScreenHeight()/2+282,
+        585,
+        70
+    };
+
+    if(CheckCollisionPointRec(mouse, botaoCreditos)){
+        desenharBotao(botaoCreditos, DARKBLUE);
+    }
+
+    EndDrawing();
+}
+
+void desenharGameplay(char mapa[LINHAS][COLUNAS+1],Texture2D parede,Texture2D bloco,Texture2D chao,Texture2D jogador,
+    Texture2D inimigoTex,Texture2D bombaTex,Texture2D explosao,bomba bomba1,inimigo inimigos[5],int andarX,int andarY,
+    int offsetX,int offsetY){
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    dmapa(
+        mapa,
+        parede,
+        bloco,
+        chao,
+        offsetX,
+        offsetY
+    );
+
+    djogador(
+        jogador,
+        andarX,
+        andarY,
+        offsetX,
+        offsetY
+    );
+
+    dbomba(
+        bombaTex,
+        bomba1,
+        offsetX,
+        offsetY
+    );
+
+    dexplosao(
+        explosao,
+        bomba1,
+        offsetX,
+        offsetY
+    );
+
+    for(int i =0;i<5;i++){
+        dinimigo(
+            inimigoTex,
+            inimigos[i],
+            offsetX,
+            offsetY
         );
     }
 }
@@ -567,33 +924,9 @@ int main(){
         }
 
         if(estadoJogo == 0){
-            BeginDrawing();
-            ClearBackground(BLACK);
+            desenharMenu(menu);
 
-            Rectangle source={
-                0,
-                0,
-                menu.width,
-                menu.height
-            };
-
-            Rectangle dest= {
-                0,
-                0,
-                GetScreenWidth(),
-                GetScreenHeight()
-            };
-
-            DrawTexturePro(
-                menu,
-                source,
-                dest,
-                (Vector2){0,0},
-                0.0f,
-                WHITE
-            );
-
-            Vector2 mouse=GetMousePosition();
+            Vector2 mouse = GetMousePosition();
 
             Rectangle botaojogar={
                 GetScreenWidth()/2 - 220,
@@ -602,60 +935,21 @@ int main(){
                 70
             };
 
-            if(CheckCollisionPointRec(mouse,botaojogar)){
-                DrawRectangleRoundedLines(
-                    botaojogar,
-                    0.3f,
-                    10,
-                    GOLD
-                );
-            }
-
             if(CheckCollisionPointRec(mouse, botaojogar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                vidas = 3;
-
-                fase = 1;
-                tempoJogo = 0;
-                faseatual = 1;
-
-                andarX = 10;
-                andarY = 6;
-
-                carregarMapa(mapa, mapa);
-
-                inimigos[0].x = 15;
-                inimigos[0].y = 8;
-                inimigos[0].vivo = 1;
-
-                for(int i = 1; i < 5; i++){
-                    inimigos[i].vivo = 0;
-                }
-
-                bomba1.ativa = 0;
-                bomba1.explosao = 0;
+                resetarJogo(mapa,&bomba1,inimigos,&vidas,&fase,&faseatual,&andarX,&andarY,&tempoJogo);
 
                 estadoJogo = 1;
             }
 
-            Rectangle botaoSair={
+            Rectangle botaoSair = {
                 GetScreenWidth()/2 - 220,
                 GetScreenHeight()/2 + 185,
                 450,
                 70
             };
 
-
-            if(CheckCollisionPointRec(mouse, botaoSair)){
-                DrawRectangleRoundedLines(
-                    botaoSair,
-                    0.3f,
-                    10, 
-                    DARKBLUE
-                );
-
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    CloseWindow();
-                }
+            if(CheckCollisionPointRec(mouse, botaoSair) &&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                CloseWindow();
             }
 
             Rectangle botaoCreditosinicio={
@@ -665,20 +959,11 @@ int main(){
                 70
             };
 
-            if(CheckCollisionPointRec(mouse, botaoCreditosinicio)){
-                DrawRectangleRoundedLines(
-                    botaoCreditosinicio,
-                    0.3f,
-                    10, 
-                    DARKBLUE
-                );
+            if(CheckCollisionPointRec(mouse, botaoCreditosinicio) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
 
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    estadoJogo = 5;
-                }
+                estadoJogo = 5;
             }
 
-            EndDrawing();
             continue;
         }
 
@@ -777,21 +1062,8 @@ int main(){
         }
 
         if(estadoJogo == 2){
-            BeginDrawing();
-
-            ClearBackground(BLACK);
-
-            dmapa(mapa,parede,bloco,chao,offsetX,offsetY);
-
-            djogador(jogador,andarX,andarY,offsetX,offsetY);
-
-            dbomba(bombaTex, bomba1, offsetX, offsetY);
-
-            dexplosao(explosao, bomba1, offsetX, offsetY);
-
-            for(int i=0;i <5;i++){
-                dinimigo(inimigo,inimigos[i],offsetX,offsetY);
-            }
+            desenharGameplay(mapa, parede, bloco, chao, jogador, inimigo, bombaTex, explosao, bomba1, inimigos, 
+                andarX, andarY, offsetX, offsetY);
 
             DrawRectangle(
                 0,
@@ -834,12 +1106,7 @@ int main(){
             };
             
             if(CheckCollisionPointRec(mouse, botaoProximaFase)){
-                DrawRectangleRoundedLines(
-                    botaoProximaFase,
-                    0.3f,
-                    10,
-                    GREEN
-                );
+                desenharBotao(botaoProximaFase,GREEN);
 
                 if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
                     fase++;
@@ -852,12 +1119,7 @@ int main(){
             }
 
             if(CheckCollisionPointRec(mouse, botaoSair)){           
-                DrawRectangleRoundedLines(
-                    botaoSair,
-                    0.3f,
-                    10,
-                    RED
-                );
+                desenharBotao(botaoSair,RED);
 
                 if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
                     CloseWindow();
@@ -869,68 +1131,8 @@ int main(){
         }
 
         if(estadoJogo == 3){
-            BeginDrawing();
-
-            ClearBackground(BLACK);
-
-            dmapa(mapa,parede,bloco,chao,offsetX,offsetY);
-
-            djogador(jogador, andarX, andarY,offsetX, offsetY);
-
-            dbomba(bombaTex, bomba1, offsetX, offsetY);
-
-            dexplosao(explosao, bomba1, offsetX, offsetY);
-
-            for(int i = 0; i < 5; i++){
-                dinimigo(inimigo,inimigos[i],offsetX,offsetY);
-            }
-
-            DrawRectangle(
-                0,
-                0,
-                GetScreenWidth(),
-                GetScreenHeight(),
-                Fade(BLACK, 0.5f)
-            );
-
-            Rectangle source = {
-                0,
-                0,
-                telaFinal.width,
-                telaFinal.height
-            };
-
-            Rectangle dest = {
-                0,
-                0,
-                GetScreenWidth(),
-                GetScreenHeight()
-            };
-
-            DrawTexturePro(
-                telaFinal,
-                source,
-                dest,
-                (Vector2){0,0},
-                0.0f,
-                WHITE
-            );
-
-            DrawText(
-                TextFormat("%.2f", tempoJogo),
-                GetScreenWidth()/2 - 160,
-                680,
-                35,
-                WHITE
-            );
-
-            DrawText(
-                TextFormat("%.2f", topScore),
-                GetScreenWidth()/2 + 180,
-                680,
-                35,
-                GOLD
-            );
+            desenharTelaFinal(telaFinal,parede,bloco,chao,jogador,inimigo,bombaTex,explosao,mapa,bomba1,inimigos,andarX,andarY,
+                offsetX,offsetY,tempoJogo,topScore);
 
             Vector2 mouse = GetMousePosition();
 
@@ -941,282 +1143,73 @@ int main(){
                 70
             };
 
-            if(CheckCollisionPointRec(mouse, botaoMenu)){
-                DrawRectangleRoundedLines(
-                    botaoMenu,
-                    0.3f,
-                    10,
-                    YELLOW
-                );
-
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    vidas =3;
-
-                    fase=1;
-                    faseatual=1;
-
-                    andarX=10;
-                    andarY =6;
-
-                    estadoJogo = 0;
-
-                    carregarMapa(mapa,mapa);
-
-                    inimigos[0].x = 15;
-                    inimigos[0].y = 8;
-                    inimigos[0].vivo = 1;
-
-                    for(int i=1;i<5;i++){
-                        inimigos[i].vivo = 0;
-                    }
-
-                    bomba1.ativa = 0;
-                    bomba1.explosao = 0;
-                }
-            }
-
-            Rectangle botaoCreditos={
+            Rectangle botaoCreditos = {
                 GetScreenWidth()/2 - 288,
                 GetScreenHeight()/2 +282,
                 585,
                 70
             };
 
-            if(CheckCollisionPointRec(mouse, botaoCreditos)){
-                DrawRectangleRoundedLines(
-                    botaoCreditos,
-                    0.3f,
-                    10,
-                    DARKBLUE
-                );
+            if(CheckCollisionPointRec(mouse, botaoMenu) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                resetarJogo(mapa,&bomba1,inimigos,&vidas,&fase,&faseatual,&andarX,&andarY,&tempoJogo);
 
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    estadoJogo = 5;
-                }
+                estadoJogo = 0;
             }
 
-            EndDrawing();
+            if(CheckCollisionPointRec(mouse, botaoCreditos) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+
+                estadoJogo = 5;
+            }
             continue;
         }
 
-        if(estadoJogo == 4){
-            BeginDrawing();
+                if(estadoJogo == 4){
+                    desenharGameOver(gameOver);
 
-            ClearBackground(BLACK);
+                    Vector2 mouse = GetMousePosition();
 
-            Rectangle source={
-                0,
-                0,
-                gameOver.width,
-                gameOver.height
-            };
+                    Rectangle botaoReiniciar = {
+                        GetScreenWidth()/2 - 220,
+                        GetScreenHeight()/2 + 100,
+                        450,
+                        70
+                    };
 
-            Rectangle dest={
-                0,
-                0,
-                GetScreenWidth(),
-                GetScreenHeight()
-            };
+                    Rectangle botaoMenu = {
+                        GetScreenWidth()/2 - 220,
+                        GetScreenHeight()/2 + 185,
+                        450,
+                        70
+                    };
 
-            DrawTexturePro(
-                gameOver,
-                source,
-                dest,
-                (Vector2){0,0},
-                0.0f,
-                WHITE
-            );
+                    if(CheckCollisionPointRec(mouse, botaoReiniciar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                        resetarJogo(mapa,&bomba1,inimigos, &vidas,&fase,&faseatual,&andarX,&andarY,&tempoJogo);
 
-            Vector2 mouse=GetMousePosition();
-
-            Rectangle botaoReiniciar={
-                GetScreenWidth()/2 - 220,
-                GetScreenHeight()/2 + 100,
-                450,
-                70
-            };
-
-            Rectangle botaoMenu = {
-                GetScreenWidth()/2 - 220,
-                GetScreenHeight()/2 + 185,
-                450,
-                70
-            };
-
-            if(CheckCollisionPointRec(mouse, botaoReiniciar)){
-                DrawRectangleRoundedLines(
-                    botaoReiniciar,
-                    0.3f,
-                    10,
-                    YELLOW
-                );
-
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    vidas = 3;
-
-                    fase = 1;
-                    tempoJogo = 0;
-                    faseatual = 1;
-
-                    andarX = 10;
-                    andarY = 6;
-
-                    estadoJogo = 1;
-
-                    carregarMapa(mapa,mapa);
-
-                    inimigos[0].x = 15;
-                    inimigos[0].y = 8;
-                    inimigos[0].vivo = 1;
-
-                    for(int i=1;i<5;i++){
-                        inimigos[i].vivo = 0;
+                        estadoJogo = 1;
                     }
 
-                    bomba1.ativa = 0;
-                    bomba1.explosao = 0;
-                }
-            }
+                    if(CheckCollisionPointRec(mouse, botaoMenu) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+                        resetarJogo(mapa,&bomba1,inimigos, &vidas,&fase,&faseatual,&andarX,&andarY,&tempoJogo);
 
-            if(CheckCollisionPointRec(mouse, botaoMenu)){
-                DrawRectangleRoundedLines(
-                    botaoMenu,
-                    0.3f,
-                    10,
-                    DARKBLUE
-                );
-
-                if(IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-                    vidas = 3;
-
-                    fase = 1;
-                    tempoJogo = 0;
-                    faseatual = 1;
-
-                    andarX = 10;
-                    andarY = 6;
-
-                    estadoJogo = 0;
-
-                    carregarMapa(mapa,mapa);
-
-                    inimigos[0].x = 15;
-                    inimigos[0].y = 8;
-                    inimigos[0].vivo = 1;
-
-                    for(int i=1;i<5;i++){
-                        inimigos[i].vivo =0;
+                        estadoJogo = 0;
                     }
 
-                    bomba1.ativa = 0;
-                    bomba1.explosao = 0;
+                    continue;
                 }
-            }
-
-            EndDrawing();
-            continue;
-        }
 
         if(estadoJogo==5){
-            BeginDrawing();
-
-            ClearBackground(BLACK);
-
-            DrawText(
-                "CREDITOS",
-                GetScreenWidth()/2 - 180,
-                120,
-                60,
-                GOLD
-            );
-
-            DrawText(
-                "Programacao:",
-                200,
-                260,
-                40,
-                WHITE
-            );
-
-            DrawText(
-                "Luis Felipe, Hugo e Kaike",
-                520,
-                260,
-                40,
-                YELLOW
-            );
-
-            DrawText(
-                "Pixel Arts:",
-                200,
-                340,
-                40,
-                WHITE
-            );
-
-            DrawText(
-                "Luis Felipe",
-                520,
-                340,
-                40,
-                YELLOW
-            );
-
-            DrawText(
-                "Framework:",
-                200,
-                420,
-                40,
-                WHITE
-            );
-
-            DrawText(
-                "Raylib",
-                520,
-                420,
-                40,
-                YELLOW
-            );
-
-            DrawText(
-                "Obrigado por jogar!",
-                GetScreenWidth()/2 - 240,
-                600,
-                50,
-                GREEN
-            );
-
-            DrawText(
-                "Pressione ENTER para voltar ao menu!",
-                GetScreenWidth()/2 - 330,
-                720,
-                30,
-                LIGHTGRAY
-            );
+            desenharCreditos();
 
             if(IsKeyPressed(KEY_ENTER)){
                 estadoJogo = 0;
             }
 
-            EndDrawing();
             continue;
         }
 
-        BeginDrawing();
-        ClearBackground(BLACK);
-
-        dmapa(mapa,parede,bloco,chao,offsetX,offsetY);
-
-        djogador(jogador, andarX, andarY,offsetX, offsetY);
-
-        dbomba(bombaTex, bomba1, offsetX, offsetY);
-
-        dexplosao(explosao, bomba1, offsetX, offsetY);
-
-        for(int i = 0; i < 5; i++){
-            dinimigo(inimigo,inimigos[i],offsetX,offsetY);
-        }
-
+        desenharGameplay(mapa,parede,bloco,chao, jogador,inimigo,bombaTex,explosao,bomba1, inimigos,andarX,andarY,
+            offsetX,offsetY);
+            
         EndDrawing();
     }
 
