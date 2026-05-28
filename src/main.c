@@ -654,6 +654,54 @@ void desenharGameOver(Texture2D gameOver){
     EndDrawing();
 }
 
+void desenharGameplay(char mapa[LINHAS][COLUNAS+1],Texture2D parede,Texture2D bloco,Texture2D chao,Texture2D jogador,
+    Texture2D inimigoTex,Texture2D bombaTex,Texture2D explosao,bomba bomba1,inimigo inimigos[5],int andarX,int andarY,
+    int offsetX,int offsetY){
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    dmapa(
+        mapa,
+        parede,
+        bloco,
+        chao,
+        offsetX,
+        offsetY
+    );
+
+    djogador(
+        jogador,
+        andarX,
+        andarY,
+        offsetX,
+        offsetY
+    );
+
+    dbomba(
+        bombaTex,
+        bomba1,
+        offsetX,
+        offsetY
+    );
+
+    dexplosao(
+        explosao,
+        bomba1,
+        offsetX,
+        offsetY
+    );
+
+    for(int i =0;i<5;i++){
+        dinimigo(
+            inimigoTex,
+            inimigos[i],
+            offsetX,
+            offsetY
+        );
+    }
+}
+
 void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Texture2D chao,Texture2D jogador,Texture2D inimigoTex,
     Texture2D bombaTex,Texture2D explosao,char mapa[LINHAS][COLUNAS+1],bomba bomba1,inimigo inimigos[5],int andarX,int andarY,
     int offsetX,int offsetY,float tempoJogo,float topScore){
@@ -735,53 +783,6 @@ void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Text
     EndDrawing();
 }
 
-void desenharGameplay(char mapa[LINHAS][COLUNAS+1],Texture2D parede,Texture2D bloco,Texture2D chao,Texture2D jogador,
-    Texture2D inimigoTex,Texture2D bombaTex,Texture2D explosao,bomba bomba1,inimigo inimigos[5],int andarX,int andarY,
-    int offsetX,int offsetY){
-
-    BeginDrawing();
-    ClearBackground(BLACK);
-
-    dmapa(
-        mapa,
-        parede,
-        bloco,
-        chao,
-        offsetX,
-        offsetY
-    );
-
-    djogador(
-        jogador,
-        andarX,
-        andarY,
-        offsetX,
-        offsetY
-    );
-
-    dbomba(
-        bombaTex,
-        bomba1,
-        offsetX,
-        offsetY
-    );
-
-    dexplosao(
-        explosao,
-        bomba1,
-        offsetX,
-        offsetY
-    );
-
-    for(int i =0;i<5;i++){
-        dinimigo(
-            inimigoTex,
-            inimigos[i],
-            offsetX,
-            offsetY
-        );
-    }
-}
 
 int main(){
 
@@ -906,7 +907,7 @@ int main(){
         fclose(arquivo);
     }
 
-    SetTargetFPS(60);
+    SetTargetFPS(120);
     
     int offsetX =(GetScreenWidth() - (COLUNAS * pixel)) / 2;
     int offsetY =(GetScreenHeight() - (LINHAS * pixel))/ 2;
