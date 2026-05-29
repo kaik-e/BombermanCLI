@@ -88,4 +88,6 @@ void desenharTelaFinal(
     float topScore
 );
 
+void desenharVidas(Texture2D cheia, Texture2D vazia, int vidas);
+
 #endif

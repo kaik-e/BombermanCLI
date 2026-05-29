@@ -489,3 +489,27 @@ void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Text
 
     EndDrawing();
 }
+
+void desenharVidas(Texture2D cheia, Texture2D vazia, int vidas){
+    for(int i=0;i<3;i++){
+        Texture2D coracao;
+
+        if(i < vidas){
+            coracao = cheia;
+        }
+        else{
+            coracao = vazia;
+        }
+
+        DrawTextureEx(
+            coracao,
+            (Vector2){
+                76,
+                260 + (i * 90)
+            },
+            0.0f,
+            0.105f,
+            WHITE
+        );
+    }
+}

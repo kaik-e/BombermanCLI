@@ -182,6 +182,8 @@ int main(){
     Texture2D faseCompleta = LoadTexture("assets/fasecompleta.png");
     Texture2D explosao = LoadTexture("assets/explosao.png");
     Texture2D bombaTex = LoadTexture("assets/bomba.png");
+    Texture2D vidaCheia = LoadTexture("assets/cheio.png");
+    Texture2D vidaVazia = LoadTexture("assets/vazio.png");
 
     SetTargetFPS(120);
     
@@ -483,6 +485,8 @@ int main(){
 
         desenharGameplay(mapa,parede,bloco,chao, jogador,inimigo,bombaTex,explosao,bomba1, inimigos,andarX,andarY,
             offsetX,offsetY);
+
+        desenharVidas(vidaCheia, vidaVazia, vidas);
             
         EndDrawing();
     }
