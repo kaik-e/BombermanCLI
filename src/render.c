@@ -136,9 +136,9 @@ void dexplosao(Texture2D explosao, bomba bomba1, int offsetX, int offsetY){
     }
 }
 
-void dinimigo(Texture2D inimigo, struct inimigo inimigo1,int offsetX, int offsetY){
+void dinimigo(Texture2D inimigoTex, inimigo inimigo1,int offsetX, int offsetY){
     if(inimigo1.vivo == 1){
-        DrawTextureEx(inimigo,(Vector2){inimigo1.x * pixel - 8 + offsetX,inimigo1.y * pixel - 12 + offsetY},
+        DrawTextureEx(inimigoTex,(Vector2){inimigo1.x * pixel - 8 + offsetX,inimigo1.y * pixel - 12 + offsetY},
             0.0f,
             0.17f,
             WHITE
@@ -148,7 +148,6 @@ void dinimigo(Texture2D inimigo, struct inimigo inimigo1,int offsetX, int offset
 
 
 void desenharCreditos(){
-
     BeginDrawing();
     ClearBackground(BLACK);
 

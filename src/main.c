@@ -1,299 +1,70 @@
-#include "raylib.h"
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "bomba.h"
+#include "render.h"
+#include "inimigo.h"
+#include "gameplay.h"
+
 int pixel = 64;
-#define LINHAS 13
-#define COLUNAS 21
-
-typedef struct bomba{
-    int x;
-    int y;
-    int ativa;
-    float timer;
-    int explosao;
-    float tempoExplosao;
-
-    int frameExplosao;
-    float tempoFrame;
-
-    int frameBomba;
-    float tempoBomba;
-} bomba;
-
-typedef struct inimigo{
-    int x;
-    int y;
-    int vivo;
-    float tempoInimigo;
-}inimigo;
 
 typedef struct score{
     float tempo;
     struct score *prox;
 }score;
 
-void adicionarScore(score **lista, float tempo){
-
-    score *novo = malloc(sizeof(score));
+void inserirScoreOrdenado(score **head,float tempo){
+    score *novo=malloc(sizeof(score));
 
     novo->tempo = tempo;
-    novo->prox = *lista;
+    novo->prox = NULL;
 
-    *lista = novo;
-}
-
-void moverjogador(char mapa[LINHAS][COLUNAS+1],int *andarX, int *andarY){
-
-    if(IsKeyPressed(KEY_W) && mapa[*andarY - 1][*andarX] != '#' && mapa[*andarY - 1][*andarX] != '*'){
-        (*andarY)--;
-    }
-    if(IsKeyPressed(KEY_S) && mapa[*andarY + 1][*andarX] != '#' && mapa[*andarY + 1][*andarX] != '*'){
-        (*andarY)++;
-    }
-    if(IsKeyPressed(KEY_A) && mapa[*andarY][*andarX - 1] != '#' && mapa[*andarY][*andarX - 1] != '*'){
-        (*andarX)--;
-    }
-    if(IsKeyPressed(KEY_D) && mapa[*andarY][*andarX + 1] != '#' && mapa[*andarY][*andarX + 1] != '*'){
-        (*andarX)++;
-    }
-}
-
-void moverinimigo(char mapa[LINHAS][COLUNAS+1],inimigo *inimigo1, int *andarX, int *andarY, int *vidas){
-
-    if(inimigo1->vivo == 0){
+    if(*head == NULL||tempo < (*head)->tempo){
+        novo->prox=*head;
+        *head = novo;
         return;
     }
 
-    if(inimigo1->x == *andarX && inimigo1->y == *andarY){
-        (*vidas)--;
-        *andarX = 10;
-        *andarY = 6;
+    score *atual = *head;
+
+    while(atual->prox != NULL &&atual->prox->tempo < tempo){
+        atual = atual->prox;
     }
 
-    inimigo1->tempoInimigo += GetFrameTime();
-
-    if(inimigo1->tempoInimigo >= 0.7f){
-        int mexeu = 0;
-
-        if(*andarX>inimigo1->x && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x + 1] != '*'){
-            inimigo1->x++;
-            mexeu=1;
-        }
-
-        else if(*andarX < inimigo1->x && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
-            inimigo1->x--;
-            mexeu=1;
-        }
-
-        else if(*andarY > inimigo1->y && mapa[inimigo1->y+ 1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
-            inimigo1->y++;
-            mexeu=1;
-        }
-
-        else if(*andarY < inimigo1->y && mapa[inimigo1->y-1][inimigo1->x] != '#' && mapa[inimigo1->y -1][inimigo1->x] != '*'){
-            inimigo1->y--;
-            mexeu=1;
-        }
-
-        if(mexeu==0){
-            int direcao = rand() %4;
-
-            if(direcao == 0 && mapa[inimigo1->y-1][inimigo1->x] != '#' && mapa[inimigo1->y-1][inimigo1->x] != '*'){
-                inimigo1->y--;
-            }
-
-            if(direcao == 1 && mapa[inimigo1->y+1][inimigo1->x] != '#' && mapa[inimigo1->y+1][inimigo1->x] != '*'){
-                inimigo1->y++;
-            }
-
-            if(direcao == 2 && mapa[inimigo1->y][inimigo1->x-1] != '#' && mapa[inimigo1->y][inimigo1->x-1] != '*'){
-                inimigo1->x--;
-            }
-
-            if(direcao == 3 && mapa[inimigo1->y][inimigo1->x+1] != '#' && mapa[inimigo1->y][inimigo1->x+1] != '*'){
-                inimigo1->x++;
-            }
-        }
-
-        if(inimigo1->x == *andarX && inimigo1->y ==*andarY){
-            (*vidas)--;
-            *andarX = 10;
-            *andarY = 6;
-        }
-
-        inimigo1->tempoInimigo = 0;
-    }
+    novo->prox = atual->prox;
+    atual->prox = novo;
 }
 
-void colocarbomba(bomba* bomba1, int andarX,int andarY){
-    if(IsKeyPressed(KEY_SPACE) && bomba1->ativa == 0){
+void carregarScores(score **head){
+    FILE *arquivo =fopen("scores.txt","r");
 
-        bomba1->x = andarX;
-        bomba1->y = andarY;
-
-        bomba1->ativa = 1;
-
-        bomba1->timer = 4.0f;
-
-        bomba1->frameBomba = 0;
-        bomba1->tempoBomba = 0;
+    if(arquivo == NULL){
+        return;
     }
+
+    float tempo;
+
+    while(fscanf(arquivo, "%f", &tempo) == 1){
+        inserirScoreOrdenado(head, tempo);
+    }
+
+    fclose(arquivo);
 }
 
-void atualizarbomba(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,int *andarX,int *andarY,int *vidas,inimigo inimigos[5]){
-    if (bomba1->ativa == 1){
-        bomba1->tempoBomba += GetFrameTime();
+void salvarScores(score *head){
+    FILE *arquivo = fopen("scores.txt", "w");
 
-        if(bomba1->tempoBomba >= 0.8f){
+    if(arquivo == NULL)
+        return;
 
-            if(bomba1->frameBomba < 2){
-                bomba1->frameBomba++;
-            }
+    score *atual = head;
 
-            bomba1->tempoBomba = 0;
-        }
-
-        bomba1->timer -= GetFrameTime();
-            
-        if (bomba1->timer <= 0){
-
-            bomba1->ativa = 0;
-            bomba1->explosao = 1;
-            bomba1->tempoExplosao = 0.5f;
-
-            bomba1->frameExplosao = 0;
-            bomba1->tempoFrame = 0;
-
-            // quebrar bloco
-            if(mapa[bomba1->y-1][bomba1->x] == '*'){
-                mapa[bomba1->y-1][bomba1->x] =' ';
-            }
-
-            if(mapa[bomba1->y+1][bomba1->x] == '*'){
-                mapa[bomba1->y+1][bomba1->x] = ' ';
-            }
-
-            if(mapa[bomba1->y][bomba1->x-1] == '*'){
-                mapa[bomba1->y][bomba1->x-1] =' ';
-            }
-
-            if(mapa[bomba1->y][bomba1->x+1] == '*'){
-                mapa[bomba1->y][bomba1->x+1] =' ';
-            }
-
-            // matar o jogador
-            if(bomba1->x == *andarX && bomba1->y == *andarY){
-                (*vidas)--;
-                *andarX = 10;
-                *andarY = 6;
-            }
-
-            if(bomba1->x == *andarX && bomba1->y-1 == *andarY){
-                (*vidas)--;
-                *andarX = 10;
-                *andarY = 6;
-            }
-
-            if(bomba1->x == *andarX && bomba1->y+1 == *andarY){
-                (*vidas)--;
-                *andarX = 10;
-                *andarY = 6;
-            }
-
-            if(bomba1->x-1 == *andarX && bomba1->y == *andarY){
-                (*vidas)--;
-                *andarX = 10;
-                *andarY = 6;
-            }
-
-            if(bomba1->x+1 == *andarX && bomba1->y == *andarY){
-                (*vidas)--;
-                *andarX = 10;
-                *andarY = 6;
-            }
-
-            // matar inimigos
-            for(int i=0;i<5;i++){
-                if(inimigos[i].vivo ==0){
-                    continue;
-                }
-
-                if(bomba1->x == inimigos[i].x && bomba1->y == inimigos[i].y){
-                    inimigos[i].vivo = 0;
-                }
-
-                if(bomba1->x == inimigos[i].x && bomba1->y -1 == inimigos[i].y){
-                    inimigos[i].vivo = 0;
-                }
-
-                if(bomba1->x == inimigos[i].x && bomba1->y+1 == inimigos[i].y){
-                    inimigos[i].vivo = 0;
-                }
-
-                if(bomba1->x -1 ==inimigos[i].x && bomba1->y == inimigos[i].y){
-                    inimigos[i].vivo = 0;
-                }
-
-                if (bomba1->x +1 == inimigos[i].x && bomba1->y == inimigos[i].y){
-                    inimigos[i].vivo = 0;
-                }
-            }
-        }
+    while(atual != NULL){
+        fprintf(arquivo, "%.2f\n", atual->tempo);
+        atual = atual->prox;
     }
 
-    if (bomba1->explosao == 1){
-
-        bomba1->tempoExplosao -= GetFrameTime();
-
-        bomba1->tempoFrame += GetFrameTime();
-
-        if(bomba1->tempoFrame >= 0.05f){
-            bomba1->frameExplosao++;
-            bomba1->tempoFrame = 0;
-        }
-
-        if(bomba1->frameExplosao > 11){
-            bomba1->frameExplosao = 11;
-        }
-
-        if(bomba1->tempoExplosao <= 0){
-            bomba1->explosao = 0;
-        }
-    }
-}
-
-void carregarMapa(char mapa[LINHAS][COLUNAS+1],char novaFase[LINHAS][COLUNAS+1]){
-    for(int y=0;y <LINHAS;y++){
-        for(int x=0;x < COLUNAS + 1;x++){
-            mapa[y][x] = novaFase[y][x];
-        }
-    }
-}
-
-void resetarJogo(char mapa[LINHAS][COLUNAS+1],bomba *bomba1,inimigo inimigos[5],int *vidas,int *fase,int *faseatual,int *andarX,int *andarY,float *tempoJogo){
-    *vidas =3;
-
-    *fase=1;
-    *faseatual=1;
-
-    *tempoJogo=0;
-
-    *andarX=10;
-    *andarY =6;
-
-    carregarMapa(mapa, mapa);
-
-    inimigos[0].x = 15;
-    inimigos[0].y = 8;
-    inimigos[0].vivo = 1;
-
-    for(int i=1;i<5;i++){
-        inimigos[i].vivo = 0;
-    }
-
-    bomba1->ativa = 0;
-    bomba1->explosao = 0;
+    fclose(arquivo);
 }
 
 int main(){
@@ -305,7 +76,7 @@ int main(){
         "#    * *  *    *    #",
         "#     **     *   *  #",
         "#   * *   *  *  **  #",
-        "#    *  * *     *   #",
+        "#    *  *   *   *   #",
         "#  *    *    *   *  #",
         "# *  *    *  *  *   #",
         "#* **  *   ** *     #",
@@ -321,7 +92,7 @@ int main(){
         "#  * *    *    *    #",
         "# *   ** *   *   *  #",
         "#   * *   *   **    #",
-        "#  * *  * *     *   #",
+        "#  * *  *   *   *   #",
         "#  *    *    *   *  #",
         "# *  *    *  *  *   #",
         "#* *  *   *  * *  * #",
@@ -337,7 +108,7 @@ int main(){
         "#  * *    *    *  * #",
         "# *   ** *   *   *  #",
         "#   * *   *  ** * * #",
-        "# ** *  * * *   **  #",
+        "# ** *  *  **   **  #",
         "#  *  * * *  *   *  #",
         "# *  *    *  *  *   #",
         "#*  *  *  **  *   * #",
@@ -353,9 +124,9 @@ int main(){
     int vidas = 3;
 
     float tempoJogo = 0;
-    float topScore = 9999;
 
     score *listaScores = NULL;
+    carregarScores(&listaScores);
 
     int andarX=10;
     int andarY=6;
@@ -411,13 +182,6 @@ int main(){
     Texture2D faseCompleta = LoadTexture("assets/fasecompleta.png");
     Texture2D explosao = LoadTexture("assets/explosao.png");
     Texture2D bombaTex = LoadTexture("assets/bomba.png");
-
-    FILE *arquivo = fopen("topscore.txt", "r");
-
-    if(arquivo != NULL){
-        fscanf(arquivo, "%f", &topScore);
-        fclose(arquivo);
-    }
 
     SetTargetFPS(120);
     
@@ -554,18 +318,9 @@ int main(){
 
         if(inimigosVivos == 0 && estadoJogo == 1){
             if(fase == 3){
-                adicionarScore(&listaScores, tempoJogo);
 
-                if(tempoJogo < topScore){
-                    topScore = tempoJogo;
-
-                    FILE *arquivo = fopen("topscore.txt", "w");
-
-                    if(arquivo != NULL){
-                        fprintf(arquivo, "%.2f", topScore);
-                        fclose(arquivo);
-                    }
-                }
+                inserirScoreOrdenado(&listaScores, tempoJogo);
+                salvarScores(listaScores);
 
                 estadoJogo = 3;
             }
@@ -644,6 +399,12 @@ int main(){
         }
 
         if(estadoJogo == 3){
+
+            float topScore = 0;
+
+            if(listaScores != NULL){
+                topScore = listaScores->tempo;
+            }
             desenharTelaFinal(telaFinal,parede,bloco,chao,jogador,inimigo,bombaTex,explosao,mapa,bomba1,inimigos,andarX,andarY,
                 offsetX,offsetY,tempoJogo,topScore);
 

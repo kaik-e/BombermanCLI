@@ -40,7 +40,7 @@ void desenharFrameExplosao(Texture2D explosao,int frame, int x,int y,int offsetX
 
 void dexplosao(Texture2D explosao,bomba bomba1,int offsetX,int offsetY);
 
-void dinimigo(Texture2D inimigo,inimigo inimigo1,int offsetX,int offsetY);
+void dinimigo(Texture2D inimigoTex,inimigo inimigo1,int offsetX,int offsetY);
 
 void desenharBotao(Rectangle botao,Color cor
 );
