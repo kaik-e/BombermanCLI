@@ -5,67 +5,10 @@
 #include "render.h"
 #include "inimigo.h"
 #include "gameplay.h"
+#include "score.h"
 
 int pixel = 64;
 
-typedef struct score{
-    float tempo;
-    struct score *prox;
-}score;
-
-void inserirScoreOrdenado(score **head,float tempo){
-    score *novo=malloc(sizeof(score));
-
-    novo->tempo = tempo;
-    novo->prox = NULL;
-
-    if(*head == NULL||tempo < (*head)->tempo){
-        novo->prox=*head;
-        *head = novo;
-        return;
-    }
-
-    score *atual = *head;
-
-    while(atual->prox != NULL &&atual->prox->tempo < tempo){
-        atual = atual->prox;
-    }
-
-    novo->prox = atual->prox;
-    atual->prox = novo;
-}
-
-void carregarScores(score **head){
-    FILE *arquivo =fopen("scores.txt","r");
-
-    if(arquivo == NULL){
-        return;
-    }
-
-    float tempo;
-
-    while(fscanf(arquivo, "%f", &tempo) == 1){
-        inserirScoreOrdenado(head, tempo);
-    }
-
-    fclose(arquivo);
-}
-
-void salvarScores(score *head){
-    FILE *arquivo = fopen("scores.txt", "w");
-
-    if(arquivo == NULL)
-        return;
-
-    score *atual = head;
-
-    while(atual != NULL){
-        fprintf(arquivo, "%.2f\n", atual->tempo);
-        atual = atual->prox;
-    }
-
-    fclose(arquivo);
-}
 
 int main(){
 
@@ -185,7 +128,7 @@ int main(){
     Texture2D vidaCheia = LoadTexture("assets/cheio.png");
     Texture2D vidaVazia = LoadTexture("assets/vazio.png");
 
-    SetTargetFPS(120);
+    SetTargetFPS(60);
     
     int offsetX =(GetScreenWidth() - (COLUNAS * pixel)) / 2;
     int offsetY =(GetScreenHeight() - (LINHAS * pixel))/ 2;
@@ -505,13 +448,7 @@ int main(){
 
     CloseWindow();
 
-    score *atual = listaScores;
-
-    while(atual != NULL){
-        score *temp = atual;
-        atual = atual->prox;
-        free(temp);
-    }
+    liberarScores(listaScores);
 
     return 0;
     }
