@@ -30,6 +30,7 @@ O jogo possui:
 * ✅ Tela de game over ☠️
 * ✅ Créditos 🎬
 * ✅ Interface fullscreen 🖥️
+* ✅ Sistema de ranking por tempo 🏆
 
 ---
 
@@ -37,7 +38,8 @@ O jogo possui:
 
 * Linguagem C
 * Raylib
-* Linux / WSL
+* Windows / Linux / WSL
+* MSYS2 MinGW64
 
 ---
 
@@ -47,7 +49,19 @@ O jogo possui:
 BomberManCLI/
 │
 ├── src/
-│   └── main.c
+│   ├── main.c
+│   ├── render.c
+│   ├── bomba.c
+│   ├── inimigo.c
+│   ├── gameplay.c
+│   └── score.c
+│
+├── include/
+│   ├── render.h
+│   ├── bomba.h
+│   ├── inimigo.h
+│   ├── gameplay.h
+│   └── score.h
 │
 ├── assets/
 │   ├── menu.png
@@ -73,7 +87,53 @@ BomberManCLI/
 
 ---
 
+# 📋 Requisitos
+
+Antes de compilar o projeto é necessário possuir:
+
+* GCC
+* Make
+* Raylib 5.x
+* MSYS2 MinGW64 no Windows
+
+---
+
+# 📦 Instalação da Raylib no Windows
+
+No Windows, abra o terminal **MSYS2 MinGW64** e execute:
+
+```bash
+pacman -S mingw-w64-x86_64-raylib
+```
+
+Caso seja solicitado, confirme a instalação digitando:
+
+```bash
+Y
+```
+
+---
+
 # ⚙️ Como compilar
+
+## Windows
+
+Abra o terminal **MSYS2 MinGW64**, navegue até a pasta do projeto e execute:
+
+```bash
+make
+```
+
+Exemplo:
+
+```bash
+cd /c/Users/SEU_USUARIO/Caminho/Para/BomberManCLI
+make
+```
+
+## Linux / WSL
+
+Abra um terminal na pasta do projeto e execute:
 
 ```bash
 make
@@ -83,16 +143,42 @@ make
 
 # ▶️ Como executar
 
+Após a compilação, execute:
+
 ```bash
 make run
+```
+
+Ou diretamente:
+
+## Windows
+
+```bash
+./jogo.exe
+```
+
+## Linux / WSL
+
+```bash
+./jogo
 ```
 
 ---
 
 # 🔧 Compilação manual
 
+Caso não queira usar o Makefile, também é possível compilar manualmente.
+
+## Windows (MSYS2 MinGW64)
+
 ```bash
-gcc src/main.c -o jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+gcc src/main.c src/render.c src/bomba.c src/inimigo.c src/gameplay.c src/score.c -Iinclude -o jogo.exe -lraylib -lopengl32 -lgdi32 -lwinmm
+```
+
+## Linux / WSL
+
+```bash
+gcc src/main.c src/render.c src/bomba.c src/inimigo.c src/gameplay.c src/score.c -Iinclude -o jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 ```
 
 ---
@@ -109,25 +195,30 @@ gcc src/main.c -o jogo -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 ---
 
+# 🕹️ Gameplay
+
+O objetivo do jogo é derrotar todos os inimigos de cada fase para avançar até a tela final 🏆
+
+O jogador perde vidas ao tocar inimigos ou ser atingido por explosões ☠️
+
+Ao concluir o jogo, o tempo do jogador é registrado no sistema de ranking.
+
+---
+
 # 🧠 Conceitos utilizados
 
 O projeto utiliza os seguintes conceitos estudados na disciplina:
 
 * ✅ Structs
 * ✅ Ponteiros
-*  ✅ Matrizes
+* ✅ Matrizes
 * ✅ Colisão
 * ✅ Manipulação gráfica
 * ✅ Controle de estados
 * ✅ Temporização
-
----
-
-# 🕹️ Gameplay
-
-O objetivo do jogo é derrotar todos os inimigos de cada fase para avançar até a tela final 🏆
-
-O jogador perde vidas ao tocar inimigos ou explosões ☠️
+* ✅ Modularização
+* ✅ Manipulação de arquivos
+* ✅ Lista encadeada
 
 ---
 
@@ -140,6 +231,7 @@ O jogador perde vidas ao tocar inimigos ou explosões ☠️
 * 🏁 Progressão de fases
 * 🎬 Tela de créditos
 * 🎨 Interface estilizada
+* 🏆 Sistema de ranking por tempo
 
 ---
 
@@ -148,10 +240,12 @@ O jogador perde vidas ao tocar inimigos ou explosões ☠️
 ## 👨‍💻 Programação
 
 * Luis Felipe
+* Kaike Campos
+* Hugo Diego
 
 ## 🎨 Pixel Arts
 
-* Luis Felipe 
+* Luis Felipe
 
 ## ⚙️ Framework
 
