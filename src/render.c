@@ -449,16 +449,16 @@ void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Text
 
     DrawText(
         TextFormat("%.2f", tempoJogo),
-        GetScreenWidth() / 2-160,
-        680,
+        GetScreenWidth() / 2-130,
+        515,
         35,
         WHITE
     );
 
     DrawText(
         TextFormat("%.2f", topScore),
-        GetScreenWidth() / 2+180,
-        680,
+        GetScreenWidth() / 2+130,
+        515,
         35,
         GOLD
     );
