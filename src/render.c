@@ -270,10 +270,10 @@ void desenharMenu(Texture2D menu){
     Vector2 mouse = GetMousePosition();
 
     Rectangle botaojogar ={
-        GetScreenWidth() /2-220,
-        GetScreenHeight() /2+ 0,
-        450,
-        70
+        GetScreenWidth() /2-150,
+        GetScreenHeight() /2+ 10,
+        310,
+        55
     };
 
     if(CheckCollisionPointRec(mouse,botaojogar)){
@@ -281,10 +281,10 @@ void desenharMenu(Texture2D menu){
     }
 
     Rectangle botaoSair = {
-        GetScreenWidth()/ 2-220,
-        GetScreenHeight()/2+185,
-        450,
-        70
+        GetScreenWidth()/ 2-150,
+        GetScreenHeight()/2+140,
+        310,
+        55
     };
 
     if(CheckCollisionPointRec(mouse,botaoSair)){
@@ -292,10 +292,10 @@ void desenharMenu(Texture2D menu){
     }
 
     Rectangle botaoCreditosinicio= {
-        GetScreenWidth()/2 - 220,
-        GetScreenHeight()/2 + 100,
-        450,
-        70
+        GetScreenWidth()/2 - 150,
+        GetScreenHeight()/2 + 75,
+        310,
+        55
     };
 
     if(CheckCollisionPointRec(mouse,botaoCreditosinicio)){
@@ -336,10 +336,10 @@ void desenharGameOver(Texture2D gameOver){
     Vector2 mouse = GetMousePosition();
 
     Rectangle botaoReiniciar={
-        GetScreenWidth() / 2-220,
-        GetScreenHeight() / 2+100,
-        450,
-        70
+        GetScreenWidth() / 2-150,
+        GetScreenHeight() / 2+75,
+        310,
+        55
     };
 
     if(CheckCollisionPointRec(mouse,botaoReiniciar)){
@@ -347,10 +347,10 @@ void desenharGameOver(Texture2D gameOver){
     }
 
     Rectangle botaoMenu={
-        GetScreenWidth()/2 - 220,
-        GetScreenHeight()/2 + 185,
-        450,
-        70
+        GetScreenWidth()/2 - 150,
+        GetScreenHeight()/2 + 140,
+        310,
+        55
     };
 
     if(CheckCollisionPointRec(mouse,botaoMenu)){
@@ -466,10 +466,10 @@ void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Text
     Vector2 mouse=GetMousePosition();
 
     Rectangle botaoMenu={
-        GetScreenWidth() / 2-288,
-        GetScreenHeight() / 2+198,
-        585,
-        70
+        GetScreenWidth() / 2-195,
+        GetScreenHeight() / 2+155,
+        400,
+        50
     };
 
     if(CheckCollisionPointRec(mouse,botaoMenu)){
@@ -477,10 +477,10 @@ void desenharTelaFinal(Texture2D telaFinal,Texture2D parede,Texture2D bloco,Text
     }
 
     Rectangle botaoCreditos={
-        GetScreenWidth()/2 -288,
-        GetScreenHeight()/2+282,
-        585,
-        70
+        GetScreenWidth()/2 -195,
+        GetScreenHeight()/2+215,
+        400,
+        50
     };
 
     if(CheckCollisionPointRec(mouse, botaoCreditos)){

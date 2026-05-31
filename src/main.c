@@ -151,10 +151,10 @@ int main(){
             Vector2 mouse = GetMousePosition();
 
             Rectangle botaojogar={
-                GetScreenWidth()/2 - 220,
+                GetScreenWidth()/2 - 150,
                 GetScreenHeight()/2 + 10,
-                450,
-                70
+                310,
+                55
             };
 
             if(CheckCollisionPointRec(mouse, botaojogar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
@@ -164,10 +164,10 @@ int main(){
             }
 
             Rectangle botaoSair = {
-                GetScreenWidth()/2 - 220,
-                GetScreenHeight()/2 + 185,
-                450,
-                70
+                GetScreenWidth()/2 - 150,
+                GetScreenHeight()/2 + 140,
+                310,
+                55
             };
 
             if(CheckCollisionPointRec(mouse, botaoSair) &&IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
@@ -175,10 +175,10 @@ int main(){
             }
 
             Rectangle botaoCreditosinicio={
-                GetScreenWidth()/2 - 220,
-                GetScreenHeight()/2 + 100,
-                450,
-                70
+                GetScreenWidth()/2 - 150,
+                GetScreenHeight()/2 + 75,
+                310,
+                55
             };
 
             if(CheckCollisionPointRec(mouse, botaoCreditosinicio) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
@@ -356,17 +356,17 @@ int main(){
             Vector2 mouse = GetMousePosition();
 
             Rectangle botaoMenu={
-                GetScreenWidth()/2 - 288,
-                GetScreenHeight()/2 +198,
-                585,
-                70
+                GetScreenWidth()/2 - 195,
+                GetScreenHeight()/2 +155,
+                400,
+                50
             };
 
             Rectangle botaoCreditos = {
-                GetScreenWidth()/2 - 288,
-                GetScreenHeight()/2 +282,
-                585,
-                70
+                GetScreenWidth()/2 - 195,
+                GetScreenHeight()/2 +215,
+                400,
+                50
             };
 
             if(CheckCollisionPointRec(mouse, botaoMenu) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
@@ -388,17 +388,17 @@ int main(){
                     Vector2 mouse = GetMousePosition();
 
                     Rectangle botaoReiniciar = {
-                        GetScreenWidth()/2 - 220,
-                        GetScreenHeight()/2 + 100,
-                        450,
-                        70
+                        GetScreenWidth()/2 - 150,
+                        GetScreenHeight()/2 + 75,
+                        310,
+                        55
                     };
 
                     Rectangle botaoMenu = {
-                        GetScreenWidth()/2 - 220,
-                        GetScreenHeight()/2 + 185,
-                        450,
-                        70
+                        GetScreenWidth()/2 - 150,
+                        GetScreenHeight()/2 + 140,
+                        310,
+                        55
                     };
 
                     if(CheckCollisionPointRec(mouse, botaoReiniciar) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
